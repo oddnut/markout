@@ -29,13 +29,13 @@ public class Attributes {
 
 	// *** Instance Members ***
 	
-	private SortedMap theMap;
-	private SortedMap theUnmodMap;
+	private SortedMap<Name, AttValue> theMap;
+	private SortedMap<Name, AttValue> theUnmodMap;
 
 	// *** Constructors ***
 	
 	public Attributes() {
-		theMap = new TreeMap();
+		theMap = new TreeMap<Name, AttValue>();
 		theUnmodMap = Collections.unmodifiableSortedMap(theMap);
 	}
 
@@ -46,7 +46,7 @@ public class Attributes {
 	// *** Public Methods ***
 	
 	public AttValue get(Name name) {
-		return (AttValue) theMap.get(name);
+		return theMap.get(name);
 	}
 	
 	public void set(Name name, AttValue value) {
@@ -69,11 +69,11 @@ public class Attributes {
 		return theMap.containsKey(name);
 	}
 	
-	public Set nameSet() {
+	public Set<Name> nameSet() {
 		return theUnmodMap.keySet();
 	}
 	
-	public Map getReadableMap() {
+	public Map<Name, AttValue> getReadableMap() {
 		return theUnmodMap;
 	}
 	
@@ -86,12 +86,9 @@ public class Attributes {
 	}
 	
 	public void writeTo(ElementWriter elWriter) throws IOException {
-		Iterator i = theMap.entrySet().iterator();
-		while(i.hasNext()) {
-			Map.Entry e = (Map.Entry) i.next();
-			
-			elWriter.attribute((Name)e.getKey(), (AttValue) e.getValue());
-		}
+		
+		for (Map.Entry<Name, AttValue> e : theMap.entrySet())
+			elWriter.attribute(e.getKey(), e.getValue());
 	}
 
 	// *** Protected Methods ***
