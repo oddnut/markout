@@ -28,11 +28,11 @@ public class ArrayXMLChunkWriter extends XMLChunkWriter {
 	// *** Class Members ***
 
 	// *** Instance Members ***
-	private ArrayList theChunks;
+	private ArrayList<XMLChunk> theChunks;
 
 	// *** Constructors ***
 	public ArrayXMLChunkWriter() {
-		theChunks = new ArrayList();
+		theChunks = new ArrayList<XMLChunk>();
 	}
 
 	// *** XMLChunkwriter Methods ***
@@ -73,7 +73,7 @@ public class ArrayXMLChunkWriter extends XMLChunkWriter {
 	// *** Public Methods ***
 	
 	public XMLChunk[] toXMLChunkArray() {
-		return (XMLChunk[]) theChunks.toArray(new XMLChunk[theChunks.size()]);
+		return theChunks.toArray(new XMLChunk[theChunks.size()]);
 	}
 
 	// *** Protected Methods ***

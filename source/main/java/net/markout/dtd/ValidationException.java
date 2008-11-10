@@ -20,6 +20,7 @@ package net.markout.dtd;
  */
 public class ValidationException extends RuntimeException {
 	// *** Class Members ***
+	private static final long serialVersionUID = 1L;
 
 	// *** Instance Members ***
 

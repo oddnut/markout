@@ -24,7 +24,7 @@ import net.markout.XML;
  *
  * Comment here.  Author: David Fogel
  */
-public class AttValue extends XMLChunk implements Comparable {
+public class AttValue extends XMLChunk implements Comparable<AttValue> {
 	// *** Class Members ***
 
 	// *** Instance Members ***
@@ -43,7 +43,7 @@ public class AttValue extends XMLChunk implements Comparable {
 		parse(text);
 	}
 	
-	AttValue(String text, char quoteChar, Collection entityRefs) {
+	AttValue(String text, char quoteChar, Collection<Name> entityRefs) {
 		theQuoteChar = quoteChar;
 		theValue = text;
 		
@@ -73,8 +73,8 @@ public class AttValue extends XMLChunk implements Comparable {
 	
 	// *** Comparable Methods ***
 	
-	public int compareTo(Object o) {
-		return theValue.compareTo(((AttValue)o).theValue);
+	public int compareTo(AttValue o) {
+		return theValue.compareTo(o.theValue);
 	}
 
 	// *** XMLChunk Methods ***
@@ -89,6 +89,10 @@ public class AttValue extends XMLChunk implements Comparable {
 	// TODO - lets get rid of this...
 	public String getUnquotedValue() {
 		return theValue;
+	}
+	
+	public Name[] getEntityRefs() {
+		return theEntityRefs;
 	}
 
 	// *** Protected Methods ***

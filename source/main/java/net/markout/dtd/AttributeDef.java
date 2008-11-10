@@ -46,7 +46,7 @@ public class AttributeDef {
 	
 	private int theTypeCode;
 	
-	private Set theEnumValues;
+	private Set<AttValue> theEnumValues;
 	
 	private boolean isRequired;
 	private boolean isFixed;
@@ -98,7 +98,7 @@ public class AttributeDef {
 	
 	public AttributeDef(Name name,
 						int typeCode,
-						Collection enumVals,
+						Collection<AttValue> enumVals,
 						boolean required) {
 		theName = name;
 		
@@ -113,7 +113,7 @@ public class AttributeDef {
 		if (enumVals == null)
 			throw new IllegalArgumentException("enumVals must not be null.");
 		
-		theEnumValues = new HashSet();
+		theEnumValues = new HashSet<AttValue>();
 		theEnumValues.addAll(enumVals);
 		
 		isRequired = required;
@@ -123,7 +123,7 @@ public class AttributeDef {
 	
 	public AttributeDef(Name name,
 						int typeCode,
-						Collection enumVals,
+						Collection<AttValue> enumVals,
 						AttValue defaultValue,
 						boolean fixed) {
 		theName = name;
@@ -139,7 +139,7 @@ public class AttributeDef {
 		if (enumVals == null)
 			throw new IllegalArgumentException("enumVals must not be null.");
 		
-		theEnumValues = new HashSet();
+		theEnumValues = new HashSet<AttValue>();
 		theEnumValues.addAll(enumVals);
 		
 		if (defaultValue == null)
@@ -196,7 +196,7 @@ public class AttributeDef {
 		return theDefault;
 	}
 	
-	public Set getEnumValues() {
+	public Set<AttValue> getEnumValues() {
 		return theEnumValues;
 	}
 

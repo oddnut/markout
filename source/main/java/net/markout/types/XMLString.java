@@ -24,7 +24,7 @@ import net.markout.IllegalXMLCharacterException;
  *
  * Comment here.  Author: David Fogel
  */
-public class XMLString extends XMLChunk implements Comparable {
+public class XMLString extends XMLChunk implements Comparable<XMLString> {
 	// *** Class Members ***
 
 	// *** Instance Members ***
@@ -60,8 +60,8 @@ public class XMLString extends XMLChunk implements Comparable {
 	
 	// *** Comparable Methods ***
 	
-	public int compareTo(Object o) {
-		return theString.compareTo(((XMLString)o).theString);
+	public int compareTo(XMLString o) {
+		return theString.compareTo(o.theString);
 	}
 	
 	// *** XMLChunk Methods ***

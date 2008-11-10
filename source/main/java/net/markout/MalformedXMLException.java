@@ -20,6 +20,7 @@ package net.markout;
  */
 public class MalformedXMLException extends IllegalXMLException {
 	// *** Class Members ***
+	private static final long serialVersionUID = 1L;
 
 	// *** Instance Members ***
 

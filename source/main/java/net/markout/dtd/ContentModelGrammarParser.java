@@ -30,24 +30,24 @@ public class ContentModelGrammarParser {
 
 	// *** Instance Members ***
 	
-	private Map theParsedGrammars;
+	private Map<String, ContentModel> theParsedGrammars;
 
 	// *** Constructors ***
 	
 	public ContentModelGrammarParser() {
-		theParsedGrammars = new HashMap();
+		theParsedGrammars = new HashMap<String, ContentModel>();
 	}
 
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
 	
-	public ContentModel parseGrammar(String grammer) {
+	public ContentModel parseGrammar(String grammar) {
 		
-		if (grammer == null || grammer.indexOf('(') < 0)
-			throw new IllegalArgumentException("grammer string value is malformed.");
+		if (grammar == null || grammar.indexOf('(') < 0)
+			throw new IllegalArgumentException("grammar string value is malformed.");
 		
-		return parseGrammarImpl(normalize(grammer));
+		return parseGrammarImpl(normalize(grammar));
 	}
 
 	// *** Protected Methods ***
@@ -56,33 +56,33 @@ public class ContentModelGrammarParser {
 
 	// *** Private Methods ***
 	
-	private ContentModel parseGrammarImpl(String grammer) {
+	private ContentModel parseGrammarImpl(String grammar) {
 		
-		ContentModel result = (ContentModel) theParsedGrammars.get(grammer);
+		ContentModel result = theParsedGrammars.get(grammar);
 		
 		if (result != null) {
-			//System.out.println("Returning previously parsed grammer:\n" + grammer + " ==>\n" + result);
+			//System.out.println("Returning previously parsed grammar:\n" + grammar + " ==>\n" + result);
 			return result;
 		}
 		
-		int length = grammer.length();
-		char last = grammer.charAt(length - 1);
+		int length = grammar.length();
+		char last = grammar.charAt(length - 1);
 		
 		if (last == '?' || last == '*' || last == '+') {
 			
-			ContentModel m = parseGrammarImpl(grammer.substring(0, length - 1));
+			ContentModel m = parseGrammarImpl(grammar.substring(0, length - 1));
 			
 			result = new RecurrenceContentModel(last, m);
 			
-		} else if (grammer.charAt(0) == '(') {
+		} else if (grammar.charAt(0) == '(') {
 			
-			List children = new ArrayList();
+			List<ContentModel> children = new ArrayList<ContentModel>();
 			
 			int level = -1;// the first '(' will bump this to 0
 			char sep = 0;
 			int start = 1; // after the initial '('
 			for (int i = 0 ; i < length ; i++) {
-				char c = grammer.charAt(i);
+				char c = grammar.charAt(i);
 				switch(c) {
 					case '(' :
 						level++;
@@ -90,14 +90,14 @@ public class ContentModelGrammarParser {
 						
 					case ')' :
 						if (level == 0)
-							children.add(parseGrammarImpl(grammer.substring(start, i))); // and we're done.
+							children.add(parseGrammarImpl(grammar.substring(start, i))); // and we're done.
 						level--;
 						break;
 						
 					case ',' : 
 						if (level == 0) {
 							if (sep == 0) sep = ',';
-							children.add(parseGrammarImpl(grammer.substring(start, i)));
+							children.add(parseGrammarImpl(grammar.substring(start, i)));
 							start = i + 1;
 						}
 						break;
@@ -105,7 +105,7 @@ public class ContentModelGrammarParser {
 					case '|' :
 						if (level == 0) {
 							if (sep == 0) sep = '|';
-							children.add(parseGrammarImpl(grammer.substring(start, i)));
+							children.add(parseGrammarImpl(grammar.substring(start, i)));
 							start = i + 1;
 						}
 						break;
@@ -116,7 +116,7 @@ public class ContentModelGrammarParser {
 			}
 			
 			if (children.size() == 1)
-				result = (ContentModel) children.get(0); // don't need either, I think
+				result = children.get(0); // don't need either, I think
 			
 			else if (sep == ',')
 				result = new SequenceContentModel(children);
@@ -126,26 +126,26 @@ public class ContentModelGrammarParser {
 			
 		} else {
 			
-			result = new NameContentModel(new Name(grammer));
+			result = new NameContentModel(new Name(grammar));
 		}
 		
-		theParsedGrammars.put(grammer, result);
+		theParsedGrammars.put(grammar, result);
 		
-		//System.out.println("Adding new parsed grammer:\n" + grammer + " ==>\n" + result);
+		//System.out.println("Adding new parsed grammar:\n" + grammar + " ==>\n" + result);
 		
 		return result;
 	}
 	
-	private String normalize(String grammer) {
+	private String normalize(String grammar) {
 		
 		int parensCount = 0;
 		boolean inName = false;
 		
 		StringWriter sw = new StringWriter();
 		
-		int length = grammer.length();
+		int length = grammar.length();
 		for (int i = 0 ; i < length ; i++) {
-			char c = grammer.charAt(i);
+			char c = grammar.charAt(i);
 			
 			switch (c) {
 				case '(' :
@@ -192,7 +192,7 @@ public class ContentModelGrammarParser {
 		}
 		
 		if (parensCount != 0)
-			throw new IllegalArgumentException("Malformed Grammer string.");
+			throw new IllegalArgumentException("Malformed grammar string.");
 		
 		return sw.toString();
 	}

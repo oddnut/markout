@@ -34,24 +34,24 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 
 	// *** Instance Members ***
 	
-	private HashSet theNotationNames;
-	private HashSet theUnparsedEntityNames;
-	private HashSet theParameterEntityNames;
-	private HashSet theGeneralEntityNames;
-	private HashSet theElementNames;
-	private HashSet theAttributeNames;
-	private HashSet theAttributeValues;
+	private HashSet<String> theNotationNames;
+	private HashSet<String> theUnparsedEntityNames;
+	private HashSet<String> theParameterEntityNames;
+	private HashSet<String> theGeneralEntityNames;
+	private HashSet<String> theElementNames;
+	private HashSet<String> theAttributeNames;
+	private HashSet<String> theAttributeValues;
 
 	// *** Constructors ***
 	
 	public SAXDTDConstantsGenerator() {
-		theNotationNames = new HashSet();
-		theUnparsedEntityNames = new HashSet();
-		theParameterEntityNames = new HashSet();
-		theGeneralEntityNames = new HashSet();
-		theElementNames = new HashSet();
-		theAttributeNames = new HashSet();
-		theAttributeValues = new HashSet();
+		theNotationNames = new HashSet<String>();
+		theUnparsedEntityNames = new HashSet<String>();
+		theParameterEntityNames = new HashSet<String>();
+		theGeneralEntityNames = new HashSet<String>();
+		theElementNames = new HashSet<String>();
+		theAttributeNames = new HashSet<String>();
+		theAttributeValues = new HashSet<String>();
 	}
 
 	// *** DTDHandler Methods ***
@@ -124,15 +124,15 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 	}
 	
 	public void writeTo(Writer out) throws IOException {
-		ArrayList names = new ArrayList();
+		ArrayList<String> names = new ArrayList<String>();
 		
 		out.write("\n\n\t// *** Notation Names ***\n");
 		names.clear();
 		names.addAll(theNotationNames);
 		Collections.sort(names);
-		Iterator i = names.iterator();
+		Iterator<String> i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name));
 			out.write(" = new Name(\"");
@@ -142,7 +142,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -156,7 +156,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name));
 			out.write(" = new Name(\"");
@@ -166,7 +166,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -180,7 +180,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name));
 			out.write(" = new Name(\"");
@@ -190,7 +190,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -204,7 +204,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name, true));
 			out.write(" = new Name(\"");
@@ -214,7 +214,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -228,7 +228,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name));
 			out.write(" = new Name(\"");
@@ -238,7 +238,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -252,7 +252,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final Name ");
 			out.write(constant(name));
 			out.write(" = new Name(\"");
@@ -262,7 +262,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");
@@ -276,7 +276,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		Collections.sort(names);
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\tpublic static final AttValue ");
 			out.write(constant(name));
 			out.write(" = new AttValue(\"");
@@ -286,7 +286,7 @@ public class SAXDTDConstantsGenerator implements DTDHandler, DeclHandler  {
 		out.write("\t// *** Lookup ***\n");
 		i = names.iterator();
 		while(i.hasNext()) {
-			String name = (String) i.next();
+			String name = i.next();
 			out.write("\t\tmap.put(\"");
 			out.write(name);
 			out.write("\", ");

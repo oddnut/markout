@@ -31,30 +31,30 @@ public class ElementType {
 	private Name theName;
 	private ContentModel theModel;
 	
-	private Map theAttributeDefs;
-	private Map theUnmodDefs;
+	private Map<Name, AttributeDef> theAttributeDefs;
+	private Map<Name, AttributeDef> theUnmodDefs;
 	
-	private Collection theRequiredAttributes;
+	private Collection<AttributeDef> theRequiredAttributes;
 	
-	private Set theDescendantProhibitions;
-	private Set theUnmodProhibitions;
+	private Set<Name> theDescendantProhibitions;
+	private Set<Name> theUnmodProhibitions;
 
 	// *** Constructors ***
 	
 	public ElementType(	Name name, 
 						ContentModel model,
-						Collection attributeDefs,
-						Collection descendantProhibitions) {
+						Collection<AttributeDef> attributeDefs,
+						Collection<Name> descendantProhibitions) {
 		if (name == null)
 			throw new IllegalArgumentException("Name can't be null");
 		theName = name;
 		theModel = model != null ? model : ContentModel.EMPTY;
-		theAttributeDefs = new HashMap();
-		theRequiredAttributes = new ArrayList();
+		theAttributeDefs = new HashMap<Name, AttributeDef>();
+		theRequiredAttributes = new ArrayList<AttributeDef>();
 		if (attributeDefs != null) {
-			Iterator i = attributeDefs.iterator();
+			Iterator<AttributeDef> i = attributeDefs.iterator();
 			while(i.hasNext()) {
-				AttributeDef def = (AttributeDef) i.next();
+				AttributeDef def = i.next();
 				Name n = def.getName();
 				if ( ! theAttributeDefs.containsKey(n)) {
 					theAttributeDefs.put(n, def);
@@ -65,7 +65,7 @@ public class ElementType {
 		}
 		theUnmodDefs = Collections.unmodifiableMap(theAttributeDefs);
 		
-		theDescendantProhibitions = new HashSet();
+		theDescendantProhibitions = new HashSet<Name>();
 		if (descendantProhibitions != null)
 			theDescendantProhibitions.addAll(descendantProhibitions);
 		theUnmodProhibitions = Collections.unmodifiableSet(theDescendantProhibitions);
@@ -107,7 +107,7 @@ public class ElementType {
 		}
 	}
 	
-	public Map getAttributeDefMap() {
+	public Map<Name, AttributeDef> getAttributeDefMap() {
 		return theUnmodDefs;
 	}
 	
@@ -127,7 +127,7 @@ public class ElementType {
 		theDescendantProhibitions.add(elementName);
 	}
 	
-	public Set getDescendantProhibitions() {
+	public Set<Name> getDescendantProhibitions() {
 		return theUnmodProhibitions;
 	}
 
@@ -141,16 +141,15 @@ public class ElementType {
 	
 	private class AttValidator implements AttributeValidator {
 		
-		private Set theRemainingRequired;
+		private Set<AttributeDef> theRemainingRequired = Collections.emptySet();
 		
 		public AttValidator() {
-			theRemainingRequired = theRequiredAttributes.isEmpty() ? 
-										Collections.EMPTY_SET : 
-										new HashSet(theRequiredAttributes);
+			if (!theRequiredAttributes.isEmpty())
+				theRemainingRequired = new HashSet<AttributeDef>(theRequiredAttributes);
 		}
 		
 		public void validateNext(Name attributeName, AttValue value, DocumentValidator docValidator) {
-			AttributeDef def = (AttributeDef) theAttributeDefs.get(attributeName);
+			AttributeDef def = theAttributeDefs.get(attributeName);
 			if (def == null)
 				throw new ValidationException("Attribute " + attributeName + " not defined for element " + theName);
 			
@@ -199,11 +198,11 @@ public class ElementType {
 		public void close() {
 			if ( ! theRemainingRequired.isEmpty()) {
 				StringBuffer sb = new StringBuffer();
-				Iterator i = theRemainingRequired.iterator();
-				sb.append(((AttributeDef)i.next()).getName());
+				Iterator<AttributeDef> i = theRemainingRequired.iterator();
+				sb.append(i.next().getName());
 				while(i.hasNext()) {
 					sb.append(", ");
-					sb.append(((AttributeDef)i.next()).getName());
+					sb.append(i.next().getName());
 				}
 				throw new ValidationException("Missing required attributes: " + sb.toString());
 			}

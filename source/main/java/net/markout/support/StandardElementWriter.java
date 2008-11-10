@@ -181,7 +181,7 @@ class StandardElementWriter implements ElementWriter {
 			
 			theAttValidator = theElementType.getAttributeValidator();
 			
-			Set prohibitions = theElementType.getDescendantProhibitions();
+			Set<Name> prohibitions = theElementType.getDescendantProhibitions();
 			if ( ! prohibitions.isEmpty())
 				theDocValidator.pushProhibitionSet(prohibitions);
 		}
@@ -194,14 +194,15 @@ class StandardElementWriter implements ElementWriter {
 		
 		theWhitespacePolicy = theDocWriter.getWhitespacePolicy().forElement(theName);
 		
+		// NOTE - this block used to be at the bottom, but now depth() calls CheckOpen, so - REVISIT
+		isOpen = true;
+		needsSpace = true;
+		hasContent = false;
+		
 		writeIfNotNull(theWhitespacePolicy.beforeElement(depth()));
 		
 		theWriter.write(XMLChar.LESS_THAN_CHAR);
 		theWriter.write(theName);
-		
-		isOpen = true;
-		needsSpace = true;
-		hasContent = false;
 	}
 	
 	public boolean isOpen() {
@@ -216,7 +217,7 @@ class StandardElementWriter implements ElementWriter {
 			
 			theAttValidator.close();
 			
-			Set prohibitions = theElementType.getDescendantProhibitions();
+			Set<Name> prohibitions = theElementType.getDescendantProhibitions();
 			if ( ! prohibitions.isEmpty())
 				theDocValidator.popProhibitionSet();
 			

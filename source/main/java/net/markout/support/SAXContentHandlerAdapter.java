@@ -44,14 +44,14 @@ public class SAXContentHandlerAdapter
 	
 	private DocumentWriter theDocWriter;
 	
-	private ArrayList theStack;
+	private ArrayList<ElementWriter> theStack;
 	
 	private DTDWriter theDTDWriter;
 
 	// *** Constructors ***
 	public SAXContentHandlerAdapter(DocumentWriter docWriter) {
 		theDocWriter = docWriter;
-		theStack = new ArrayList();
+		theStack = new ArrayList<ElementWriter>();
 	}
 
 	// *** ContentHandler Methods ***

@@ -29,11 +29,11 @@ import net.markout.types.*;
 public abstract class GeneratedSourceDocument {
 	// *** Class Members ***
 	
-	private static Map ELEMENT_NAMES = new HashMap();
-	private static Map ATT_NAMES = new HashMap();
-	private static Map ATT_VALUES = new HashMap();
-	private static Map SPACES = new HashMap();
-	private static Map ENTITY_NAMES = new HashMap();
+	private static Map<String, Name> ELEMENT_NAMES = new HashMap<String, Name>();
+	private static Map<String, Name> ATT_NAMES = new HashMap<String, Name>();
+	private static Map<String, AttValue> ATT_VALUES = new HashMap<String, AttValue>();
+	private static Map<String, Whitespace> SPACES = new HashMap<String, Whitespace>();
+	private static Map<String, Name> ENTITY_NAMES = new HashMap<String, Name>();
 
 	// *** Instance Members ***
 
@@ -59,7 +59,7 @@ public abstract class GeneratedSourceDocument {
 	
 	
 	public Name el(String name) {
-		Name n = (Name) ELEMENT_NAMES.get(name);
+		Name n = ELEMENT_NAMES.get(name);
 		if (n == null) {
 			n = new Name(name);
 			ELEMENT_NAMES.put(name, n);
@@ -68,7 +68,7 @@ public abstract class GeneratedSourceDocument {
 	}
 	
 	public Name att(String name) {
-		Name n = (Name) ATT_NAMES.get(name);
+		Name n = ATT_NAMES.get(name);
 		if (n == null) {
 			n = new Name(name);
 			ATT_NAMES.put(name, n);
@@ -77,7 +77,7 @@ public abstract class GeneratedSourceDocument {
 	}
 	
 	public AttValue val(String val) {
-		AttValue v = (AttValue) ATT_VALUES.get(val);
+		AttValue v = ATT_VALUES.get(val);
 		if (v == null) {
 			v = new AttValue(val);
 			ATT_VALUES.put(val, v);
@@ -86,7 +86,7 @@ public abstract class GeneratedSourceDocument {
 	}
 	
 	public Whitespace sp(String space) {
-		Whitespace s = (Whitespace) SPACES.get(space);
+		Whitespace s = SPACES.get(space);
 		if (s == null) {
 			s = new Whitespace(space);
 			SPACES.put(space, s);
@@ -95,7 +95,7 @@ public abstract class GeneratedSourceDocument {
 	}
 	
 	public Name ref(String name) {
-		Name n = (Name) ENTITY_NAMES.get(name);
+		Name n = ENTITY_NAMES.get(name);
 		if (n == null) {
 			n = new Name(name);
 			ENTITY_NAMES.put(name, n);

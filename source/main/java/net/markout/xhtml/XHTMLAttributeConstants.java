@@ -147,11 +147,11 @@ public class XHTMLAttributeConstants {
 	public static final Name XML_SPACE = new Name("xml:space");
 	public static final Name XMLNS = new Name("xmlns");
 	
-	private static Map NAMES;
+	private static Map<String, Name> NAMES;
 	
 	static {
 		
-		NAMES = new HashMap();
+		NAMES = new HashMap<String, Name>();
 		
 		NAMES.put("abbr", ABBR);
 		NAMES.put("accept", ACCEPT);
@@ -277,7 +277,7 @@ public class XHTMLAttributeConstants {
 	}
 	
 	public static Name attributeNameFor(String name) {
-		return (Name) NAMES.get(name);
+		return NAMES.get(name);
 	}
 }
 

@@ -28,12 +28,12 @@ public class SequenceContentModel implements ContentModel {
 
 	// *** Instance Members ***
 	
-	private List theChildren;
+	private List<ContentModel> theChildren;
 
 	// *** Constructors ***
 	
-	public SequenceContentModel(List children) {
-		theChildren = new ArrayList(children);
+	public SequenceContentModel(List<ContentModel> children) {
+		theChildren = new ArrayList<ContentModel>(children);
 	}
 
 	// *** ContentModel Methods ***
@@ -104,7 +104,7 @@ public class SequenceContentModel implements ContentModel {
 			if (theCurrentIndex >= theChildren.size())
 				return false;
 			
-			ContentModel model = (ContentModel) theChildren.get(theCurrentIndex);
+			ContentModel model = theChildren.get(theCurrentIndex);
 			
 			theCurrentValidator = model.getValidator();
 			
@@ -127,7 +127,7 @@ public class SequenceContentModel implements ContentModel {
 			theCurrentIndex++;
 					
 			while (theCurrentIndex < length) {
-				ContentModel model = (ContentModel) theChildren.get(theCurrentIndex);
+				ContentModel model = theChildren.get(theCurrentIndex);
 				if ( ! model.getValidator().validateClose())
 					return false;
 				theCurrentIndex++;

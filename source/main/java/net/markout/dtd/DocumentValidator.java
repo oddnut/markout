@@ -30,18 +30,18 @@ public class DocumentValidator {
 	
 	private DTD theDTD;
 	
-	private Set theIDVals;
-	private Set thePendingIDRefs;
+	private Set<AttValue> theIDVals;
+	private Set<AttValue> thePendingIDRefs;
 	
-	private List theProhibitionsStack;
+	private List<Set<Name>> theProhibitionsStack;
 
 	// *** Constructors ***
 	
 	public DocumentValidator(DTD dtd) {
 		theDTD = dtd;
-		theIDVals = new HashSet();
-		thePendingIDRefs = new HashSet();
-		theProhibitionsStack = new ArrayList();
+		theIDVals = new HashSet<AttValue>();
+		thePendingIDRefs = new HashSet<AttValue>();
+		theProhibitionsStack = new ArrayList<Set<Name>>();
 	}
 
 	// *** Interface Methods ***
@@ -52,18 +52,18 @@ public class DocumentValidator {
 		return theDTD;
 	}
 	
-	public void pushProhibitionSet(Set prohibitions) {
+	public void pushProhibitionSet(Set<Name> prohibitions) {
 		theProhibitionsStack.add(prohibitions);
 	}
 	
-	public Set popProhibitionSet() {
-		return (Set) theProhibitionsStack.remove(theProhibitionsStack.size() - 1);
+	public Set<Name> popProhibitionSet() {
+		return theProhibitionsStack.remove(theProhibitionsStack.size() - 1);
 	}
 	
 	public void validateDescendant(Name elementName) {
 		int length = theProhibitionsStack.size();
 		for (int i = 0 ; i < length ; i++) {
-			Set s = (Set) theProhibitionsStack.get(i);
+			Set<Name> s = theProhibitionsStack.get(i);
 			if (s.contains(elementName))
 				throw new ValidationException("Descendant prohibited: element " + 
 						elementName.toString() + " not allowed in some ancestor element.");

@@ -27,12 +27,12 @@ public class ChoiceContentModel implements ContentModel {
 
 	// *** Instance Members ***
 	
-	private List theChildren;
+	private List<ContentModel> theChildren;
 
 	// *** Constructors ***
 	
-	public ChoiceContentModel(Collection children) {
-		theChildren = new ArrayList(children);
+	public ChoiceContentModel(Collection<ContentModel> children) {
+		theChildren = new ArrayList<ContentModel>(children);
 	}
 
 	// *** ContentModel Methods ***
@@ -92,7 +92,7 @@ public class ChoiceContentModel implements ContentModel {
 			//else need to find one
 			int length = theChildren.size();
 			for (int i = 0 ; i < length ; i++) {
-				ContentModel model = (ContentModel) theChildren.get(i);
+				ContentModel model = theChildren.get(i);
 				ContentValidator val = model.getValidator();
 				if (val.validateNext(elementName)) {
 					theCurrentValidator = val;
@@ -110,7 +110,7 @@ public class ChoiceContentModel implements ContentModel {
 			//else need to find one
 			int length = theChildren.size();
 			for (int i = 0 ; i < length ; i++) {
-				ContentModel model = (ContentModel) theChildren.get(i);
+				ContentModel model = theChildren.get(i);
 				ContentValidator val = model.getValidator();
 				if (val.validateClose()) {
 					theCurrentValidator = val;

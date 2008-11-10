@@ -84,10 +84,10 @@ public class XHTMLAttValueConstants {
 	public static final AttValue VSIDES = new AttValue("vsides");
 	public static final AttValue YES = new AttValue("yes");
 	
-	private static Map VALUES;
+	private static Map<String, AttValue> VALUES;
 	
 	static {
-		VALUES = new HashMap();
+		VALUES = new HashMap<String, AttValue>();
 		
 		VALUES.put("0", ZERO);
 		VALUES.put("1", ONE);
@@ -150,7 +150,7 @@ public class XHTMLAttValueConstants {
 	}
 	
 	public static AttValue attributeValueFor(String value) {
-		return (AttValue) VALUES.get(value);
+		return VALUES.get(value);
 	}
 }
 

@@ -127,11 +127,11 @@ public class DocumentSourceGenerator {
 		
 		private Locator theLocator;
 		
-		private ArrayList theElWriterNames;
+		private ArrayList<String> theElWriterNames;
 		private int theLevel;
 		
 		public Handler() {
-			theElWriterNames = new ArrayList();
+			theElWriterNames = new ArrayList<String>();
 			theLevel = -1;
 		}
 		
@@ -178,7 +178,7 @@ public class DocumentSourceGenerator {
 				
 			} else {
 				
-				String parentEW = (String) theElWriterNames.get(theLevel);
+				String parentEW = theElWriterNames.get(theLevel);
 				
 				boolean declare = false;
 				if (theElWriterNames.size() <= theLevel + 1) {// i.e. theLevel is last one
@@ -186,7 +186,7 @@ public class DocumentSourceGenerator {
 					declare = true;
 				}
 				
-				ew = (String) theElWriterNames.get(theLevel + 1);
+				ew = theElWriterNames.get(theLevel + 1);
 				
 				if (declare)
 					write("ElementWriter ");
@@ -238,7 +238,7 @@ public class DocumentSourceGenerator {
 				}
 			}
 			
-			String ew = (String) theElWriterNames.get(theLevel);
+			String ew = theElWriterNames.get(theLevel);
 			
 			if (isReallyWhitespace) {
 				
@@ -266,7 +266,7 @@ public class DocumentSourceGenerator {
 				
 			} else {
 				
-				String ew = (String) theElWriterNames.get(theLevel);
+				String ew = theElWriterNames.get(theLevel);
 				write(ew);
 				write(".content().space(sp(");
 				writeSafeQuotedJavaString(ch, start, length);
@@ -286,7 +286,7 @@ public class DocumentSourceGenerator {
 				
 			} else {
 				// ew.content().pi(new Target(target), new Instruction(data));
-				String ew = (String) theElWriterNames.get(theLevel);
+				String ew = theElWriterNames.get(theLevel);
 				write(ew);
 				write(".content().pi(new Target(");
 				writeSafeQuotedJavaString(target.toCharArray(), 0, target.length());
@@ -305,7 +305,7 @@ public class DocumentSourceGenerator {
 				
 			} else {
 				// not sure if this is right.  going to try:
-				String ew = (String) theElWriterNames.get(theLevel);
+				String ew = theElWriterNames.get(theLevel);
 				write(ew);
 				write(".content().reference(ref(\"");
 				write(name);
@@ -358,7 +358,7 @@ public class DocumentSourceGenerator {
 				
 			} else {
 				
-				String ew = (String) theElWriterNames.get(theLevel);
+				String ew = theElWriterNames.get(theLevel);
 				write(ew);
 				write(".content().comment(new Comment(");
 				writeSafeQuotedJavaString(ch, start, length);

@@ -29,7 +29,7 @@ public abstract class XMLChunk {
 	private static final int CACHE_INITIAL_SIZE = 5;
 	private static final int CACHE_INCREMENT = 5;
 	
-	private static ArrayList theCharsetIndexes = new ArrayList();
+	private static ArrayList<Charset> theCharsetIndexes = new ArrayList<Charset>();
 
 	// *** Instance Members ***
 	private byte[][] theByteCache;

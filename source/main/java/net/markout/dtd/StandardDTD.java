@@ -29,11 +29,11 @@ public class StandardDTD implements DTD {
 	// *** Instance Members ***
 	
 	private Name theRootElementName;
-	private Map theElementTypes;
-	private Map theGeneralEntities;
-	private Map theParameterEntities;
-	private Map theUnparsedEntities;
-	private Map theNotations;
+	private Map<Name, ElementType> theElementTypes;
+	private Map<Name, Entity> theGeneralEntities;
+	private Map<Name, Entity> theParameterEntities;
+	private Map<Name, UnparsedEntity> theUnparsedEntities;
+	private Map<Name, Notation> theNotations;
 	
 	private DTD theParentDTD;
 
@@ -45,11 +45,11 @@ public class StandardDTD implements DTD {
 			theRootElementName = theParentDTD.getRootElementName();
 		else
 			theRootElementName = rootElementName;
-		theElementTypes = new HashMap();
-		theGeneralEntities = new HashMap();
-		theParameterEntities = new HashMap();
-		theNotations = new HashMap();
-		theUnparsedEntities = new HashMap();
+		theElementTypes = new HashMap<Name, ElementType>();
+		theGeneralEntities = new HashMap<Name, Entity>();
+		theParameterEntities = new HashMap<Name, Entity>();
+		theNotations = new HashMap<Name, Notation>();
+		theUnparsedEntities = new HashMap<Name, UnparsedEntity>();
 	}
 
 	// *** DTD Methods ***
@@ -61,35 +61,35 @@ public class StandardDTD implements DTD {
 	public ElementType getElementType(Name elementName) {
 		ElementType result = theParentDTD != null ? theParentDTD.getElementType(elementName) : null;
 		if (result == null)
-			result = (ElementType) theElementTypes.get(elementName);
+			result = theElementTypes.get(elementName);
 		return result;
 	}
 	
 	public Entity getGeneralEntity(Name entityName) {
 		Entity result = theParentDTD != null ? theParentDTD.getGeneralEntity(entityName) : null;
 		if (result == null)
-			result = (Entity) theGeneralEntities.get(entityName);
+			result = theGeneralEntities.get(entityName);
 		return result;
 	}
 	
 	public Entity getParameterEntity(Name entityName) {
 		Entity result = theParentDTD != null ? theParentDTD.getParameterEntity(entityName) : null;
 		if (result == null)
-			result = (Entity) theParameterEntities.get(entityName);
+			result = theParameterEntities.get(entityName);
 		return result;
 	}
 	
 	public Notation getNotation(Name notationName) {
 		Notation result = theParentDTD != null ? theParentDTD.getNotation(notationName) : null;
 		if (result == null)
-			result = (Notation) theNotations.get(notationName);
+			result = theNotations.get(notationName);
 		return result;
 	}
 	
 	public UnparsedEntity getUnparsedEntity(Name unparsedEntityName) {
 		UnparsedEntity result = theParentDTD != null ? theParentDTD.getUnparsedEntity(unparsedEntityName) : null;
 		if (result == null)
-			result = (UnparsedEntity) theUnparsedEntities.get(unparsedEntityName);
+			result = theUnparsedEntities.get(unparsedEntityName);
 		return result;
 	}
 

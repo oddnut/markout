@@ -98,7 +98,7 @@ public class EntityValue {
 	// *** Private Methods ***
 	
 	/**
-	 * Parses the text, escaping markup delimeters and outer quotes.
+	 * Parses the text, escaping markup delimiters and outer quotes.
 	 * Uses the original string unless it encounter something which
 	 * needs escaping, at which point it copies everything to a 
 	 * buffer from then on.
@@ -106,7 +106,7 @@ public class EntityValue {
 	private final void parse(String text) {
 		
 		int length = text.length();
-		List chunks = new ArrayList();
+		List<XMLChunk> chunks = new ArrayList<XMLChunk>();
 		char outerQ = 0;
 		char innerQ = 0;
 		int currentStart = 0;

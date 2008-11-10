@@ -117,11 +117,11 @@ public class XHTMLElementConstants {
 	public static final Name UL = new Name("ul");
 	public static final Name VAR = new Name("var");
 	
-	private static Map NAMES;
+	private static Map<String, Name> NAMES;
 	
 	static {
 		
-		NAMES = new HashMap();
+		NAMES = new HashMap<String, Name>();
 		
 		NAMES.put("a", A);
 		NAMES.put("abbr", ABBR);
@@ -217,7 +217,7 @@ public class XHTMLElementConstants {
 	}
 	
 	public static Name elementNameFor(String name) {
-		return (Name) NAMES.get(name);
+		return NAMES.get(name);
 	}
 }
 

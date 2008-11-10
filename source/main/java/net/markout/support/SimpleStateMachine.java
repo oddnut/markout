@@ -26,13 +26,13 @@ public abstract class SimpleStateMachine {
 
 	// *** Instance Members ***
 	
-	private Map theStates;
+	private Map<String, Map<String, String>> theStates;
 	private String theCurrentState;
 
 	// *** Constructors ***
 	
 	protected SimpleStateMachine() {
-		theStates = new HashMap();
+		theStates = new HashMap<String, Map<String, String>>();
 		theCurrentState = null;
 	}
 
@@ -41,8 +41,8 @@ public abstract class SimpleStateMachine {
 	// *** Public Methods ***
 	
 	public boolean transition(String transitionName) {
-		Map trans = (Map) theStates.get(theCurrentState);
-		String newState = (String) trans.get(transitionName);
+		Map<String, String> trans = theStates.get(theCurrentState);
+		String newState = trans.get(transitionName);
 		if (newState == null) {
 			handleIllegalTransition(transitionName);
 			return false;
@@ -63,7 +63,7 @@ public abstract class SimpleStateMachine {
 	protected void addState(String stateName) {
 		if (theStates.containsKey(stateName))
 			throw new IllegalArgumentException("Can't add a state twice!");
-		theStates.put(stateName, new HashMap());
+		theStates.put(stateName, new HashMap<String, String>());
 	}
 	
 	protected void addTransition(String fromState, String transitionName, String toState) {
@@ -71,7 +71,7 @@ public abstract class SimpleStateMachine {
 			throw new IllegalArgumentException("No such state as " + fromState);
 		if ( ! theStates.containsKey(toState))
 			throw new IllegalArgumentException("No such state as " + toState);
-		Map trans = (Map) theStates.get(fromState);
+		Map<String, String> trans = theStates.get(fromState);
 		if (trans.containsKey(transitionName))
 			throw new IllegalArgumentException("Can't add a transition twice to the same state!");
 		trans.put(transitionName, toState);

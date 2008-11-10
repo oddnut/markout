@@ -26,18 +26,18 @@ public class MixedContentModel implements ContentModel, ContentValidator {
 	// *** Class Members ***
 
 	// *** Instance Members ***
-	private Set theAllowedNames;
+	private Set<Name> theAllowedNames;
 
 	// *** Constructors ***
 	public MixedContentModel() {
 		this(null);
 	}
 	
-	public MixedContentModel(Collection allowedElementNames) {
+	public MixedContentModel(Collection<Name> allowedElementNames) {
 		if (allowedElementNames != null)
-			theAllowedNames = new HashSet(allowedElementNames);
+			theAllowedNames = new HashSet<Name>(allowedElementNames);
 		else
-			theAllowedNames = new HashSet();
+			theAllowedNames = new HashSet<Name>();
 	}
 
 	// *** ContentModel Methods ***
@@ -66,7 +66,7 @@ public class MixedContentModel implements ContentModel, ContentValidator {
 		theAllowedNames.add(name);
 	}
 	
-	public void addAllowedNames(Collection names) {
+	public void addAllowedNames(Collection<Name> names) {
 		theAllowedNames.addAll(names);
 	}
 	
@@ -75,7 +75,7 @@ public class MixedContentModel implements ContentModel, ContentValidator {
 		
 		sb.append("MIXED: (#PCDATA");
 		
-		Iterator i = theAllowedNames.iterator();
+		Iterator<Name> i = theAllowedNames.iterator();
 		while (i.hasNext()) {
 			sb.append("|");
 			sb.append(i.next().toString());

@@ -35,7 +35,7 @@ public class AttValueWriter extends Writer {
 	private char theOuterQ;
 	private char theInnerQ;
 	
-	private Set theEntityRefs;
+	private Set<Name> theEntityRefs;
 
 	// *** Constructors ***
 	
@@ -168,7 +168,7 @@ public class AttValueWriter extends Writer {
 	public void reference(Name entityName) throws IOException {
 		// keep track of which entities we add so we can validate them at elementWriter.attribute() time.
 		if (theEntityRefs == null)
-			theEntityRefs = new HashSet();
+			theEntityRefs = new HashSet<Name>();
 		theEntityRefs.add(entityName);
 		
 		entityName.writeTo(theChars);

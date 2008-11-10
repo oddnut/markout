@@ -109,12 +109,12 @@ class StandardDTDWriter implements DTDWriter {
 	// *** Package Methods ***
 
 	// *** Private Methods ***
-	
+	/* we'll need this at some point...
 	private void checkOpen() {
 		if (!isOpen)
 			throw new MalformedXMLException("Can't write DTD content at this location, DTDWriter is closed");
 	}
-
+	*/
 	// *** Private Classes ***
 }
 
