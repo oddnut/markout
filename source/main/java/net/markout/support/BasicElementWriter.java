@@ -68,7 +68,7 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 	public List<Name> getElementNameStack() {
 		
 		if (theState == State.CLOSED)
-			throw new IllegalStateException("ElementNameStack accessed on a closed ElementWriter.");
+			throw new MalformedXMLException("ElementNameStack accessed on a closed ElementWriter.");
 		
 		return theElementNameStack;
 	}
@@ -76,7 +76,7 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 	public Name getName() {
 		
 		if (theState == State.CLOSED)
-			throw new MalformedXMLException("getName called on closed ElementWriter.");
+			throw new MalformedXMLException("getName called on closed ContentWriter.");
 		
 		return theName;
 	}
@@ -91,7 +91,7 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 		
 		switch(theState) {
 		case CLOSED:
-			throw new MalformedXMLException("Attribute written on a closed ElementWritter");
+			throw new MalformedXMLException("Attribute written on a closed ElementWriter");
 		
 		case CONTENT:
 		case TEXT:
@@ -99,7 +99,7 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 			throw new MalformedXMLException("Attribute written on an ElementWriter with content.");
 			
 		case OPEN_NEEDS_SPACE:
-			theWriter.write(XMLChar.SPACE_CHAR); // need minimum whitespace between attribtues
+			theWriter.write(XMLChar.SPACE_CHAR); // need minimum whitespace between attributes
 		}
 		
 		theState = State.OPEN_NEEDS_SPACE;
