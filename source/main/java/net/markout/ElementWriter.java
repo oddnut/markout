@@ -36,6 +36,9 @@ public interface ElementWriter {
 	
 	// --- Content ---
 	public ContentWriter content() throws IOException;
+	
+	// --- Closing (optional) ---
+	public void close() throws IOException;
 }
 
 
