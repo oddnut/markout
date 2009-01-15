@@ -52,12 +52,12 @@ class TextWriter extends Writer {
 
 	// *** Writer Methods ***
 	
-	public void write(char c) throws IOException {
+	public void write(int c) throws IOException {
 		
 		checkOpen();
 		
-		if ( ! XMLChar.isXMLChar(c))
-			throw new IllegalXMLCharacterException(c);
+		if ( ! XMLChar.isXMLChar((char)c))
+			throw new IllegalXMLCharacterException((char)c);
 		
 		if (c == '&') {
 			
@@ -78,7 +78,7 @@ class TextWriter extends Writer {
 		
 			if (theNext >= theBuffer.length)
 				flushBuffer();
-			theBuffer[theNext] = c;
+			theBuffer[theNext] = (char) c;
 			theNext++;
 		}
 	}
