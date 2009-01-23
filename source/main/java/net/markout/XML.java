@@ -15,7 +15,6 @@ package net.markout;
 
 import java.io.*;
 
-import net.markout.dtd.DTD;
 import net.markout.support.*;
 import net.markout.types.CharRef;
 
@@ -44,32 +43,17 @@ public class XML {
 	
 	public static DocumentWriter documentWriter(Writer dest) throws IOException {
 		
-		return new StandardDocumentWriter(new WriterXMLChunkWriter(dest));
+		return new BasicDocumentWriter(new WriterXMLChunkWriter(dest));
 	}
 	
 	public static DocumentWriter documentWriter(OutputStream dest) throws IOException {
 		
-		return new StandardDocumentWriter(new OSXMLChunkWriter(dest));
+		return new BasicDocumentWriter(new OSXMLChunkWriter(dest));
 	}
 	
 	public static DocumentWriter documentWriter(OutputStream dest, String charsetName) throws IOException {
 		
-		return new StandardDocumentWriter(new OSXMLChunkWriter(dest, charsetName));
-	}
-	
-	public static DocumentWriter documentWriter(Writer dest, DTD dtd) throws IOException {
-		
-		return new StandardDocumentWriter(new WriterXMLChunkWriter(dest), dtd);
-	}
-	
-	public static DocumentWriter documentWriter(OutputStream dest, DTD dtd) throws IOException {
-		
-		return new StandardDocumentWriter(new OSXMLChunkWriter(dest), dtd);
-	}
-	
-	public static DocumentWriter documentWriter(OutputStream dest, String charsetName, DTD dtd) throws IOException {
-		
-		return new StandardDocumentWriter(new OSXMLChunkWriter(dest, charsetName), dtd);
+		return new BasicDocumentWriter(new OSXMLChunkWriter(dest, charsetName));
 	}
 
 	// *** Protected Methods ***

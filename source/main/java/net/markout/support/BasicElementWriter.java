@@ -10,6 +10,7 @@ package net.markout.support;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.util.Arrays;
 import java.util.List;
 
 import net.markout.*;
@@ -17,7 +18,7 @@ import net.markout.types.*;
 
 // *** imports ***
 
-public class BasicElementWriter implements ElementWriter, ContentWriter {
+public class BasicElementWriter implements ElementWriter {
 	// *** Class Members ***
 	
 	private static final XMLString COMMENT_START = new XMLString("<!--");
@@ -61,8 +62,52 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 		
 		theState = State.CLOSED;
 	}
-
+	
 	// *** ElementWriter Methods ***
+	
+	// --- Opening ---
+	public void open(Name elementName) throws IOException {
+		open(elementName, null);
+	}
+	
+	public void open(Name elementName, List<Name> parentElementNames) throws IOException {
+		
+		if (theState != State.CLOSED)
+			throw new MalformedXMLException("ElementWriter already opened.");
+		theState = State.OPEN_NEEDS_SPACE;
+		
+		theName = elementName;
+		if (theElementNameStack == null || theElementNameStack.getParent() != parentElementNames)
+			theElementNameStack = new ElementNameStack(parentElementNames, elementName);
+		else
+			theElementNameStack.set(elementName);
+		
+		theWriter.write(XMLChar.LESS_THAN_CHAR);
+		theWriter.write(theName);
+	}
+	
+	// --- Attributes ---
+	public void attribute(Attribute att) throws IOException {
+		
+		switch(theState) {
+		case CLOSED:
+			throw new MalformedXMLException("Attribute written on a closed ElementWriter");
+		
+		case CONTENT:
+		case TEXT:
+		case CHILD:
+			throw new MalformedXMLException("Attribute written on an ElementWriter with content.");
+			
+		case OPEN_NEEDS_SPACE:
+			theWriter.write(XMLChar.SPACE_CHAR); // need minimum whitespace between attributes
+		}
+		
+		theState = State.OPEN_NEEDS_SPACE;
+		
+		theWriter.write(att.getName());
+		theWriter.write(XMLChar.EQUALS_CHAR);
+		theWriter.write(att.getValue());
+	}
 	
 	// --- Writer State ---
 	public List<Name> getElementNameStack() {
@@ -80,90 +125,6 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 		
 		return theName;
 	}
-	
-	// --- Attributes ---
-	public void attributes(Attributes attributes) throws IOException {
-		
-		attributes.writeTo(this);
-	}
-	
-	public void attribute(Name name, AttValue value) throws IOException {
-		
-		switch(theState) {
-		case CLOSED:
-			throw new MalformedXMLException("Attribute written on a closed ElementWriter");
-		
-		case CONTENT:
-		case TEXT:
-		case CHILD:
-			throw new MalformedXMLException("Attribute written on an ElementWriter with content.");
-			
-		case OPEN_NEEDS_SPACE:
-			theWriter.write(XMLChar.SPACE_CHAR); // need minimum whitespace between attributes
-		}
-		
-		theState = State.OPEN_NEEDS_SPACE;
-		
-		theWriter.write(name);
-		theWriter.write(XMLChar.EQUALS_CHAR);
-		theWriter.write(value);
-	}
-	
-	public void space(Whitespace space) throws IOException {
-		
-		// There are two general categories for when space() is called,
-		// within the open element tag, and within content.
-		// notice the return after case OPEN.
-		
-		switch(theState) {
-		case CLOSED:
-			throw new MalformedXMLException("Space written on a closed ElementWritter");
-			
-		case OPEN_NEEDS_SPACE:
-			theState = State.OPEN;
-			//fall through
-		case OPEN:
-			theWriter.write(space);
-			return;
-		
-		case TEXT:
-			theTextWriter.close();
-			break;
-			
-		case CHILD:
-			theCurrentChild.close();
-			break;
-		}
-		
-		theState = State.CONTENT;
-		
-		theWriter.write(space);
-	}
-	
-	// --- Content ---
-	public ContentWriter content() throws IOException {
-		
-		switch(theState) {
-		case CLOSED:
-			throw new MalformedXMLException("Content written on closed ElementWriter.");
-			
-		case CONTENT:
-		case TEXT:
-		case CHILD:
-			return this; // already has content, return the ContentWriter view
-		
-		case OPEN_NEEDS_SPACE:
-			//theWriter.write(XMLChar.SPACE_CHAR); // actually don't want this
-		}
-		
-		theWriter.write(XMLChar.GREATER_THAN_CHAR);
-		
-		theState = State.CONTENT;
-		
-		return this;
-	}
-	
-	// *** ContentWriter Methods ***
 	
 	// --- Escaped Text Content ---
 	public void text(Text text) throws IOException {
@@ -238,47 +199,38 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 	}
 	
 	// --- Element Content ---
-	public ElementWriter elementWriter(Name elementName) throws IOException {
+	public ContentWriter element(Name elementName, Attribute... attributes ) throws IOException {
 		
 		prepareForContent();
 		
 		theState = State.CHILD;
 		
 		if (theCurrentChild == null)
-			theCurrentChild = new BasicElementWriter(theWriter);
+			theCurrentChild = createChildElementWriter(theWriter);
 		
 		theCurrentChild.open(elementName, theElementNameStack);
 		
-		return theCurrentChild;
-	}
-	
-	public ContentWriter element(Name elementName) throws IOException {
+		Arrays.sort(attributes);
+		for (Attribute a : attributes)
+			theCurrentChild.attribute(a);
 		
-		return elementWriter(elementName).content();
-	}
-	
-	public ContentWriter element(Name elementName, Attributes attributes) throws IOException {
-		
-		elementWriter(elementName);
-		if (attributes != null)
-			attributes.writeTo(theCurrentChild);
 		return theCurrentChild.content();
 	}
 	
-	public void emptyElement(Name elementName) throws IOException {
+	public void emptyElement(Name elementName, Attribute... attributes) throws IOException {
 		
-		elementWriter(elementName);
+		prepareForContent();
 		
-		theCurrentChild.close();
+		theState = State.CHILD;
 		
-		theState = State.CONTENT;
-	}
-	
-	public void emptyElement(Name elementName, Attributes attributes) throws IOException {
+		if (theCurrentChild == null)
+			theCurrentChild = createChildElementWriter(theWriter);
 		
-		elementWriter(elementName);
-		if (attributes != null)
-			attributes.writeTo(theCurrentChild);
+		theCurrentChild.open(elementName, theElementNameStack);
+		
+		Arrays.sort(attributes);
+		for (Attribute a : attributes)
+			theCurrentChild.attribute(a);
 		
 		theCurrentChild.close();
 		
@@ -307,29 +259,39 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 		}
 		theWriter.write(PI_END);
 	}
-
-	// *** Public Methods ***
 	
-	public void open(Name elementName) throws IOException {
-		open(elementName, null);
+	public void space(Whitespace space) throws IOException {
+		
+		// There are two general categories for when space() is called,
+		// within the open element tag, and within content.
+		// notice the return after case OPEN.
+		
+		switch(theState) {
+		case CLOSED:
+			throw new MalformedXMLException("Space written on a closed ElementWritter");
+			
+		case OPEN_NEEDS_SPACE:
+			theState = State.OPEN;
+			//fall through
+		case OPEN:
+			theWriter.write(space);
+			return;
+		
+		case TEXT:
+			theTextWriter.close();
+			break;
+			
+		case CHILD:
+			theCurrentChild.close();
+			break;
+		}
+		
+		theState = State.CONTENT;
+		
+		theWriter.write(space);
 	}
 	
-	public void open(Name elementName, List<Name> parentElementNames) throws IOException {
-		
-		if (theState != State.CLOSED)
-			throw new MalformedXMLException("ElementWriter already opened.");
-		theState = State.OPEN_NEEDS_SPACE;
-		
-		theName = elementName;
-		if (theElementNameStack == null || theElementNameStack.getParent() != parentElementNames)
-			theElementNameStack = new ElementNameStack(parentElementNames, elementName);
-		else
-			theElementNameStack.set(elementName);
-		
-		theWriter.write(XMLChar.LESS_THAN_CHAR);
-		theWriter.write(theName);
-	}
-	
+	// --- Closing ---
 	public void close() throws IOException {
 		
 		switch(theState) {
@@ -371,7 +333,36 @@ public class BasicElementWriter implements ElementWriter, ContentWriter {
 		theName = null;
 	}
 
+	// *** Public Methods ***
+
+	// --- Content ---
+	public ContentWriter content() throws IOException {
+		
+		switch(theState) {
+		case CLOSED:
+			throw new MalformedXMLException("Content written on closed ElementWriter.");
+			
+		case CONTENT:
+		case TEXT:
+		case CHILD:
+			return this; // already has content, return the ContentWriter view
+		
+		case OPEN_NEEDS_SPACE:
+			//theWriter.write(XMLChar.SPACE_CHAR); // actually don't want this
+		}
+		
+		theWriter.write(XMLChar.GREATER_THAN_CHAR);
+		
+		theState = State.CONTENT;
+		
+		return this;
+	}
+
 	// *** Protected Methods ***
+	protected BasicElementWriter createChildElementWriter(XMLChunkWriter out) {
+		
+		return new BasicElementWriter(out);
+	}
 
 	// *** Package Methods ***
 

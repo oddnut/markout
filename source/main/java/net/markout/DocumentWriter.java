@@ -28,10 +28,6 @@ public interface DocumentWriter {
 	// --- Whitespace Policy ---
 	// public void setWhitespacePolicy(WhitespacePolicy policy);
 	
-	// --- Writer State ---
-	//public ElementWriter currentElementWriter();
-	//public ElementWriter currentElementWriter(int depth);
-	
 	// --- XML Version Declaration ---
 	public void xmlVersion() throws IOException;
 	public void xmlVersion(EncName encoding) throws IOException;
@@ -43,11 +39,8 @@ public interface DocumentWriter {
 							SystemLiteral systemID) throws IOException;
 	
 	// --- Root Element ---
-	public ElementWriter rootElementWriter(Name elementName) throws IOException;
-	public ContentWriter rootElement(Name elementName) throws IOException;
-	public ContentWriter rootElement(Name elementName, Attributes attributes) throws IOException;
-	public void emptyRootElement(Name elementName) throws IOException;
-	public void emptyRootElement(Name elementName, Attributes attributes) throws IOException;
+	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException;
+	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException;
 	
 	// --- Misc Document Parts ---
 	public void comment(Comment c) throws IOException;
