@@ -45,11 +45,8 @@ public interface ContentWriter {
 	public void reference(Name entityName) throws IOException;
 	
 	// --- Element Content ---
-	public ElementWriter elementWriter(Name elementName) throws IOException;
-	public ContentWriter element(Name elementName) throws IOException;
-	public ContentWriter element(Name elementName, Attributes attributes) throws IOException;
-	public void emptyElement(Name elementName) throws IOException;
-	public void emptyElement(Name elementName, Attributes attributes) throws IOException;
+	public ContentWriter element(Name elementName, Attribute... attributes) throws IOException;
+	public void emptyElement(Name elementName, Attribute... attributes) throws IOException;
 	
 	// --- Misc Content ---
 	public void comment(Comment c) throws IOException;

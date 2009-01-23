@@ -9,6 +9,7 @@
 package net.markout.support;
 
 import java.io.IOException;
+import java.util.Arrays;
 
 import net.markout.*;
 import net.markout.types.*;
@@ -61,7 +62,7 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 		
 		theState = State.START;
 		
-		theElementWriter = new BasicElementWriter(theWriter);
+		theElementWriter = createRootElementWriter(theWriter);
 	}
 
 	// *** DocumentWriter Methods ***
@@ -162,7 +163,7 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	}
 	
 	// --- Root Element ---
-	public ElementWriter rootElementWriter(Name elementName) throws IOException {
+	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException {
 		
 		switch(theState) {
 			case ROOT:
@@ -175,35 +176,30 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 		
 		theElementWriter.open(elementName);
 		
-		return theElementWriter;
-	}
-	
-	public ContentWriter rootElement(Name elementName) throws IOException {
+		Arrays.sort(attributes);
+		for (Attribute a : attributes)
+			theElementWriter.attribute(a);
 		
-		return rootElementWriter(elementName).content();
-	}
-	
-	public ContentWriter rootElement(Name elementName, Attributes attributes) throws IOException {
-		
-		rootElementWriter(elementName);
-		if (attributes != null) {
-			attributes.writeTo(theElementWriter);
-		}
 		return theElementWriter.content();
 	}
 	
-	public void emptyRootElement(Name elementName) throws IOException {
+	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException {
 		
-		rootElementWriter(elementName);
-		theElementWriter.close();
-	}
-	
-	public void emptyRootElement(Name elementName, Attributes attributes) throws IOException {
-		
-		rootElementWriter(elementName);
-		if (attributes != null) {
-			attributes.writeTo(theElementWriter);
+		switch(theState) {
+			case ROOT:
+			case END:
+				throw new MalformedXMLException("Root element declared more than once.");
+			case DTD:
+				closeDTDWriter();
 		}
+		theState = State.ROOT;
+	
+		theElementWriter.open(elementName);
+		
+		Arrays.sort(attributes);
+		for (Attribute a : attributes)
+			theElementWriter.attribute(a);
+		
 		theElementWriter.close();
 	}
 	
@@ -307,6 +303,12 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	protected void closeDTDWriter() throws IOException {
 		//if (theState == State.DTD)
 			theWriter.write(XMLChar.GREATER_THAN_CHAR);
+	}
+	
+	/* This can be overridden by subclasses to provide subclasses of ElementWriter */
+	protected BasicElementWriter createRootElementWriter(XMLChunkWriter out) {
+		
+		return new BasicElementWriter(out);
 	}
 
 	// *** Package Methods ***

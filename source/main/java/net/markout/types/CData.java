@@ -23,6 +23,8 @@ import net.markout.IllegalXMLStringException;
  */
 public class CData extends XMLString {
 	// *** Class Members ***
+	private static final char[] BAD = "]]>".toCharArray();
+	private static final char LAST_BAD = BAD[BAD.length - 1]; // '>'
 
 	// *** Instance Members ***
 
@@ -40,9 +42,8 @@ public class CData extends XMLString {
 	
 	protected void check() {
 		
-		char[] bad = "]]>".toCharArray();
 		int badIndex = 0;
-		char nextBad = bad[badIndex];
+		char nextBad = BAD[badIndex];
 		
 		int length = theString.length();
 		
@@ -54,14 +55,14 @@ public class CData extends XMLString {
 			
 			// make sure we don't contain the string "]]>"
 			if ( c == nextBad ) {
-				if ( nextBad == '>' )
+				if ( nextBad == LAST_BAD )
 					throw new IllegalXMLStringException(theString, "CData");
 				badIndex++;
-				nextBad = bad[badIndex];
+				nextBad = BAD[badIndex];
 			} else if (badIndex != 0) {
 				// reset
 				badIndex = 0;
-				nextBad = bad[badIndex];
+				nextBad = BAD[badIndex];
 			}
 		}
 	}

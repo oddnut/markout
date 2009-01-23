@@ -14,7 +14,7 @@ package net.markout.support;
 // *** imports ***
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +23,6 @@ import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.ext.LexicalHandler;
 
 import net.markout.*;
-import net.markout.dtd.ValidationException;
 import net.markout.types.*;
 
 /**
@@ -44,14 +43,14 @@ public class SAXContentHandlerAdapter
 	
 	private DocumentWriter theDocWriter;
 	
-	private ArrayList<ElementWriter> theStack;
+	private ArrayList<ContentWriter> theStack;
 	
 	private DTDWriter theDTDWriter;
 
 	// *** Constructors ***
 	public SAXContentHandlerAdapter(DocumentWriter docWriter) {
 		theDocWriter = docWriter;
-		theStack = new ArrayList<ElementWriter>();
+		theStack = new ArrayList<ContentWriter>();
 	}
 
 	// *** ContentHandler Methods ***
@@ -67,7 +66,7 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void endDocument() throws SAXException {
@@ -77,7 +76,7 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void startPrefixMapping (String prefix, String uri) throws SAXException {
@@ -91,39 +90,42 @@ public class SAXContentHandlerAdapter
 	public void startElement (String namespaceURI, String localName,
 			String qName, org.xml.sax.Attributes atts) throws SAXException {
 		
+		int n = atts.getLength();
+		Attribute[] attributes = new Attribute[n];
+		for (int i = 0 ; i < n ; i++) {
+			attributes[i] = new Attribute(new Name(atts.getQName(i)), new AttValue(atts.getValue(i)));
+		}
+		
 		try {
-			ElementWriter ew = peek();
-			if (ew != null) {
+			ContentWriter cw = peek();
+			if (cw != null) {
 				
-				ew = ew.content().elementWriter(new Name(qName));
+				cw = cw.element(new Name(qName), attributes);
 				
 			} else {
 				// at root element;
-				ew = theDocWriter.rootElementWriter(new Name(qName));
+				cw = theDocWriter.rootElement(new Name(qName));
 			}
 			
-			int n = atts.getLength();
-			for (int i = 0 ; i < n ; i++) {
-				ew.attribute(new Name(atts.getQName(i)), new AttValue(atts.getValue(i)));
-			}
 			
-			push(ew);
+			
+			push(cw);
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void endElement (String namespaceURI, String localName, String qName) throws SAXException {
 		
-			/*ElementWriter ew = */pop();
+		pop();
 	}
 	
 	public void characters (char ch[], int start, int length) throws SAXException {
 		try {
-			ElementWriter ew = peek();
+			ContentWriter cw = peek();
 			
-			if (ew != null) {
+			if (cw != null) {
 				
 				boolean isReallyWhitespace = true;
 				for (int i = start ; i < (start + length) ; i++) {
@@ -134,9 +136,9 @@ public class SAXContentHandlerAdapter
 				}
 				
 				if (isReallyWhitespace)
-					ew.content().space(new Whitespace(new String(ch, start, length)));
+					cw.space(new Whitespace(new String(ch, start, length)));
 				else
-					ew.content().text().write(ch, start, length);
+					cw.text().write(ch, start, length);
 				
 			} else {
 				// this shouldn't happen, because characters should only
@@ -150,16 +152,16 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void ignorableWhitespace (char ch[], int start, int length) throws SAXException {
 		try {
-			ElementWriter ew = peek();
+			ContentWriter cw = peek();
 			
-			if (ew != null) {
+			if (cw != null) {
 				
-				ew.content().space(new Whitespace(new String(ch, start, length)));
+				cw.space(new Whitespace(new String(ch, start, length)));
 				
 			} else {
 				
@@ -169,16 +171,16 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void processingInstruction (String target, String data) throws SAXException {
 		try {
-			ElementWriter ew = peek();
+			ContentWriter cw = peek();
 			
-			if (ew != null) {
+			if (cw != null) {
 				
-				ew.content().pi(new Target(target), new Instruction(data));
+				cw.pi(new Target(target), new Instruction(data));
 				
 			} else {
 				
@@ -188,17 +190,17 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	public void skippedEntity (String name) throws SAXException {
 		try {
-			ElementWriter ew = peek();
+			ContentWriter cw = peek();
 			
-			if (ew != null) {
+			if (cw != null) {
 				
 				// not sure if this is right.  going to try:
-				ew.content().reference(new Name(name));
+				cw.reference(new Name(name));
 				
 			} else {
 				// really don't know what this would be.
@@ -208,7 +210,7 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	// *** DTDHandler Methods ***
@@ -278,7 +280,7 @@ public class SAXContentHandlerAdapter
 		
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML", xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML" + getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML" + getLocationString(), ve);}
 	}
 	
 	public void endDTD () throws SAXException {
@@ -307,10 +309,10 @@ public class SAXContentHandlerAdapter
 		try {
 			
 			Comment c = new Comment(new String(ch, start, length));
-			ElementWriter ew = peek();
-			if (ew != null) {
+			ContentWriter cw = peek();
+			if (cw != null) {
 				
-				ew.content().comment(c);
+				cw.comment(c);
 				
 			} else if (theDTDWriter != null) {
 				
@@ -323,7 +325,7 @@ public class SAXContentHandlerAdapter
 			
 		} catch (IOException ioe) {LOG.error("IOException", ioe);}
 		catch (IllegalXMLException xmle) {LOG.error("Bad XML {}", getLocationString(), xmle);}
-		catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
+		//catch (ValidationException ve) {LOG.error("Invalid XML {}", getLocationString(), ve);}
 	}
 	
 	// *** ErrorHandler Methods ***
@@ -348,24 +350,24 @@ public class SAXContentHandlerAdapter
 
 	// *** Private Methods ***
 	
-	private void push(ElementWriter elWriter) {
-		theStack.add(elWriter);
+	private void push(ContentWriter contentWriter) {
+		theStack.add(contentWriter);
 	}
 	
-	private ElementWriter peek() {
+	private ContentWriter peek() {
 		
 		if (theStack.isEmpty())
 			return null;
 		
-		return (ElementWriter) theStack.get(theStack.size() - 1);
+		return theStack.get(theStack.size() - 1);
 	}
 	
-	private ElementWriter pop() {
+	private ContentWriter pop() {
 		
 		if (theStack.isEmpty())
 			return null;
 		
-		return (ElementWriter) theStack.remove(theStack.size() - 1);
+		return theStack.remove(theStack.size() - 1);
 	}
 	
 	private String getLocationString() {

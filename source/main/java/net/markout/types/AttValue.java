@@ -91,6 +91,10 @@ public class AttValue extends XMLChunk implements Comparable<AttValue> {
 		return theValue;
 	}
 	
+	public char getQuoteChar() {
+		return theQuoteChar;
+	}
+	
 	public Name[] getEntityRefs() {
 		return theEntityRefs;
 	}
