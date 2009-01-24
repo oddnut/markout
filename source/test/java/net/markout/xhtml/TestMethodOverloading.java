@@ -1,0 +1,49 @@
+/*
+	TestMethodOverloading.java
+
+	Author: David Fogel
+	Copyright 2009 David Fogel
+	All rights reserved.
+*/
+
+package net.markout.xhtml;
+
+import java.io.IOException;
+import static net.markout.xhtml.XHTML.*;
+
+/**
+ * TestMethodOverloading
+ * 
+ * Comment here.
+ */
+public class TestMethodOverloading {
+	// *** Class Members ***
+	public static void main(String[] args) throws IOException {
+		
+		HtmlDocumentWriter dw = XHTML.strictDocumentWriter(false, true, System.out);
+		HtmlContentWriter cw = dw.html(XMLNS_HTTP___WWW_W3_ORG_1999_XHTML, XML_LANG.att("en"), LANG.att("en"));
+		
+		cw.head().title().text("Here comes dave");
+		cw = cw.body();
+		cw.h1(CLASS.att("foo")).text("Yeah yeah yeah!");
+		cw.p().a(HREF.att("http://markout.net/")).text("booya");
+		
+		dw.close();
+	}
+
+	// *** Instance Members ***
+
+	// *** Constructors ***
+
+	// *** Interface Methods ***
+
+	// *** Public Methods ***
+
+	// *** Protected Methods ***
+
+	// *** Package Methods ***
+
+	// *** Private Methods ***
+
+	// *** Private Classes ***
+}

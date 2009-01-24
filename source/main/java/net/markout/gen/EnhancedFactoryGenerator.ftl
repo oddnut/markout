@@ -38,19 +38,19 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	<#if generateEnhancedWriters>
 	
 	<#list factoryMethodPrefixes as prefix>
-	public static ${enhancedDocumentWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
+	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
 		return ${prefix}DocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
-	public static ${enhancedDocumentWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		${enhancedDocumentWriterClassName} dw = new ${enhancedDocumentWriterClassName}(new OSXMLChunkWriter(out, charset));
+	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
+		${docWriterClassName} dw = new ${docWriterClassName}(new OSXMLChunkWriter(out, charset));
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
 		return dw;
 	}
-	public static ${enhancedDocumentWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		${enhancedDocumentWriterClassName} dw = new ${enhancedDocumentWriterClassName}(new WriterXMLChunkWriter(out));
+	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
+		${docWriterClassName} dw = new ${docWriterClassName}(new WriterXMLChunkWriter(out));
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)

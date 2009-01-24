@@ -14,6 +14,10 @@ import java.io.IOException;
 import net.markout.support.*;
 import net.markout.types.*;
 
+<#if generateFactoryClass>
+import static ${packageName}.${factoryClassName}.*;
+</#if>
+
 /**
  * ${docWriterClassName}
  * 
@@ -21,21 +25,34 @@ import net.markout.types.*;
  */
 public class ${docWriterClassName} extends BasicDocumentWriter {
 	// *** Class Members ***
-	private static final Name ROOT_ELEMENT = new Name("${rootElementName}");
+	<#assign method_name = generator.asMethodName(rootElementName) />
+	<#assign constant_name = generator.asConstantName(rootElementName) />
+	<#assign model = generator.getElementModel(rootElementName) />
+	
+	<#if !generateFactoryClass>
+	private static final Name ${constant_name} = new Name("${rootElementName}");
+	</#if>
 
 	// *** Constructors ***
 	public ${docWriterClassName}(XMLChunkWriter out) {super(out);}
 
 	// *** Public Methods ***
-	<#assign root_method = generator.asMethodName(rootElementName) />
 	
-	public ${contentWriterClassName} ${root_method}(Attribute... attributes) throws IOException {
-		return (${contentWriterClassName}) rootElement(ROOT_ELEMENT, attributes);
+	<#if model.name() == "empty">
+	public void ${method_name}() throws IOException {
+		emptyRootElement(${constant_name});
 	}
-	
-	public void empty${root_method?cap_first}(Attribute... attributes) throws IOException {
-		emptyRootElement(ROOT_ELEMENT, attributes);
+	public void ${method_name}(Attribute... attributes) throws IOException {
+		emptyRootElement(${constant_name}, attributes);
 	}
+	<#else>
+	public ${contentWriterClassName} ${method_name}() throws IOException {
+		return (${contentWriterClassName}) rootElement(${constant_name});
+	}
+	public ${contentWriterClassName} ${method_name}(Attribute... attributes) throws IOException {
+		return (${contentWriterClassName}) rootElement(${constant_name}, attributes);
+	}
+	</#if>
 
 	// *** Protected Methods ***
 	protected BasicElementWriter createRootElementWriter(XMLChunkWriter out) {

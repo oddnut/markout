@@ -34,6 +34,7 @@ import net.markout.types.*;
  */
 public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	// *** Class Members ***
+	public enum Model {empty, any, mixed, children}
 
 	// *** Instance Members ***
 	private Name rootElement;
@@ -45,14 +46,20 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	private boolean isParsed = false;
 	
 	private Set<Name> names;
-	private Set<Name> elementNames;
+	private Map<Name, Model> elements;
 	private Set<Attribute> attributes;
+	
+	private Configuration config;
+	private Template factoryTemplate;
+	private Template docTemplate;
+	private Template cwTemplate;
+	private Template ewTemplate;
 
 	// *** Constructors ***
 	public EnhancedFactoryGenerator(
 			Name rootElement,
 			PublicIDLiteral publicID,
-			SystemLiteral systemID) {
+			SystemLiteral systemID) throws IOException {
 		this(rootElement, publicID, systemID, null);
 	}
 	
@@ -60,7 +67,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 			Name rootElement,
 			PublicIDLiteral publicID,
 			SystemLiteral systemID,
-			String factoryMethodPrefix) {
+			String factoryMethodPrefix) throws IOException {
 		
 		this.rootElement = rootElement;
 		
@@ -71,10 +78,12 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		docs = new ArrayList<String>();
 		
 		names = new TreeSet<Name>();
-		elementNames = new TreeSet<Name>();
+		elements = new TreeMap<Name, Model>();
 		attributes = new TreeSet<Attribute>();
 		
 		addDTD(publicID, systemID, factoryMethodPrefix != null ? factoryMethodPrefix : rootElement.toString());
+		
+		initTemplates();
 	}
 
 	// *** Interface Methods ***
@@ -122,12 +131,10 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	
 	public void writeTo(File sourceRootDir,
 						String packageName,
-						String factoryClassName, 
+						String factoryClassName,
+						boolean generateFactoryClass,
 						boolean generateEnhancedWriters) throws IOException, TemplateException {
-		
-		if (factoryClassName == null)
-			factoryClassName = capitalizeFirst(asMethodName(rootElement));
-		
+		// parse only once if it's not happened yet:
 		if (!isParsed) {
 			try {
 				parse();
@@ -138,40 +145,70 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 			}
 		}
 		
-		Configuration config = new Configuration();
-		config.setClassForTemplateLoading(this.getClass(), "");
-		config.setObjectWrapper(new DefaultObjectWrapper());
-		
-		Template doc_template = config.getTemplate("EnhancedFactoryGenerator.ftl", "UTF-8");
+		String name = capitalizeFirst(asMethodName(rootElement));
+		if (factoryClassName == null)
+			factoryClassName = name;
+		String docWriterClassName = name + "DocumentWriter";
+		String contentWriterClassName = name + "ContentWriter";
+		String elementWriterClassName = name + "ElementWriter";
 		
 		Map<String, Object> model = new HashMap<String, Object>();
+		
 		model.put("factoryClassName", factoryClassName);
+		model.put("docWriterClassName", docWriterClassName);
+		model.put("elementWriterClassName", elementWriterClassName);
+		model.put("contentWriterClassName", contentWriterClassName);
+		
 		model.put("packageName", packageName);
+		
 		model.put("rootElementName", rootElement);
+		
 		model.put("names", names);
+		model.put("elements", elements.keySet());
 		model.put("attributes", attributes);
 		model.put("publicIDs", publicIDs);
 		model.put("systems", systems);
 		model.put("factoryMethodPrefixes", methodPrefixes);
-		 // TODO UNFINISHED - THIS IS A HACK UNTIL WE COMBINE THE ENHANCED WRITERS WITH THIS:
-		model.put("enhancedDocumentWriterClassName", capitalizeFirst(asMethodName(rootElement)) + "DocumentWriter");
+		model.put("generateFactoryClass", new Boolean(generateFactoryClass));
 		model.put("generateEnhancedWriters", new Boolean(generateEnhancedWriters));
 		model.put("generator", this);
 		
-		String fileName = factoryClassName + ".java";
+		FileOutputStream fileOut;
+		Writer out;
 		File dir = new File(sourceRootDir, packageName.replaceAll("\\.", "/"));
 		dir.mkdirs();
-		FileOutputStream fileOut = new FileOutputStream(new File(dir, fileName), false);
-		Writer out = new OutputStreamWriter(fileOut, "UTF-8");
-		doc_template.process(model, out);
-		out.close();
+		
+		if (generateFactoryClass) {
+			String fileName = factoryClassName + ".java";
+			fileOut = new FileOutputStream(new File(dir, fileName), false);
+			out = new OutputStreamWriter(fileOut, "UTF-8");
+			factoryTemplate.process(model, out);
+			out.close();
+		}
 		
 		if (generateEnhancedWriters) {
-			EnhancedDocumentWriterGenerator writerGen =
-				new EnhancedDocumentWriterGenerator(packageName, rootElement, elementNames);
+			String docWriterFileName = docWriterClassName + ".java";
+			fileOut = new FileOutputStream(new File(dir, docWriterFileName), false);
+			out = new OutputStreamWriter(fileOut, "UTF-8");
+			docTemplate.process(model, out);
+			out.close();
 			
-			writerGen.writeTo(sourceRootDir);
+			String contentWriterFile = contentWriterClassName + ".java";
+			fileOut = new FileOutputStream(new File(dir, contentWriterFile), false);
+			out = new OutputStreamWriter(fileOut, "UTF-8");
+			cwTemplate.process(model, out);
+			out.close();
+			
+			String elementWriterFileName = elementWriterClassName + ".java";
+			fileOut = new FileOutputStream(new File(dir, elementWriterFileName), false);
+			out = new OutputStreamWriter(fileOut, "UTF-8");
+			ewTemplate.process(model, out);
+			out.close();
 		}
+	}
+	
+	public Model getElementModel(Name elementName) {
+		return elements.get(elementName);
 	}
 
 	// *** Protected Methods ***
@@ -179,6 +216,16 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	// *** Package Methods ***
 
 	// *** Private Methods ***
+	private void initTemplates() throws IOException {
+		config = new Configuration();
+		config.setClassForTemplateLoading(this.getClass(), "");
+		config.setObjectWrapper(new DefaultObjectWrapper());
+		
+		factoryTemplate = config.getTemplate("EnhancedFactoryGenerator.ftl", "UTF-8");
+		docTemplate = config.getTemplate("EnhancedDocumentWriter.ftl", "UTF-8");
+		cwTemplate = config.getTemplate("EnhancedContentWriter.ftl", "UTF-8");
+		ewTemplate = config.getTemplate("EnhancedElementWriter.ftl", "UTF-8");
+	}
 
 	// *** Private Classes ***
 	private class Handler implements DeclHandler {
@@ -209,7 +256,18 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		public void elementDecl(String name, String model) throws SAXException {
 			Name n = new Name(name);
 			names.add(n);
-			elementNames.add(n);
+			
+			Model m;
+			if (model.equals("EMPTY"))
+				m = Model.empty;
+			else if (model.equals("ANY"))
+				m = Model.any;
+			else if (model.contains("#PCDATA"))
+				m = Model.mixed;
+			else
+				m = Model.children;
+			
+			elements.put(n, m);
 		}
 
 		public void externalEntityDecl(String name, String publicId, String systemId) throws SAXException {

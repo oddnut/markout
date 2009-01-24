@@ -22,12 +22,16 @@ public interface ${contentWriterClassName} extends ContentWriter {
 	// *** Class Members ***
 
 	// *** Public Methods ***
-	<#list elementNames as name>
+	<#list elements as name>
 	<#assign method_name = generator.asMethodName(name) />
-	<#assign constant_name = generator.asConstantName(name) />
-	
+	<#assign model = generator.getElementModel(name) />
+	<#if model.name() == "empty">
+	public void ${method_name}() throws IOException;
+	public void ${method_name}(Attribute... attributes) throws IOException;
+	<#else>
+	public ${contentWriterClassName} ${method_name}() throws IOException;
 	public ${contentWriterClassName} ${method_name}(Attribute... attributes) throws IOException;
-	public void empty${method_name?cap_first}(Attribute... attributes) throws IOException;
+	</#if>
 	</#list>
 }
 
