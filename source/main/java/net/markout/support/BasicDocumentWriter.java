@@ -163,6 +163,10 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	}
 	
 	// --- Root Element ---
+	public ContentWriter rootElement(Name elementName) throws IOException {
+		return rootElement(elementName, (Attribute[]) null);
+	}
+	
 	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException {
 		
 		switch(theState) {
@@ -176,11 +180,17 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 		
 		theElementWriter.open(elementName);
 		
-		Arrays.sort(attributes);
-		for (Attribute a : attributes)
-			theElementWriter.attribute(a);
+		if (attributes != null) {
+			Arrays.sort(attributes);
+			for (Attribute a : attributes)
+				theElementWriter.attribute(a);
+		}
 		
 		return theElementWriter.content();
+	}
+	
+	public void emptyRootElement(Name elementName) throws IOException {
+		emptyRootElement(elementName, (Attribute[]) null);
 	}
 	
 	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException {
@@ -196,9 +206,11 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	
 		theElementWriter.open(elementName);
 		
-		Arrays.sort(attributes);
-		for (Attribute a : attributes)
-			theElementWriter.attribute(a);
+		if (attributes != null) {
+			Arrays.sort(attributes);
+			for (Attribute a : attributes)
+				theElementWriter.attribute(a);
+		}
 		
 		theElementWriter.close();
 	}

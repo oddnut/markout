@@ -8,8 +8,6 @@
 
 package net.markout.support;
 
-import net.markout.DocumentWriter;
-
 /**
  * DocumentWriterFactory
  * 
@@ -25,9 +23,6 @@ public class DocumentWriterFactory {
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
-	//public static DocumentWriter documentWriter(boolean declareVersion, boolean declare) throws IOException {
-		
-	//}
 
 	// *** Protected Methods ***
 

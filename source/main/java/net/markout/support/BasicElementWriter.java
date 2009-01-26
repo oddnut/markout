@@ -199,7 +199,11 @@ public class BasicElementWriter implements ElementWriter {
 	}
 	
 	// --- Element Content ---
-	public ContentWriter element(Name elementName, Attribute... attributes ) throws IOException {
+	public ContentWriter element(Name elementName) throws IOException {
+		return element(elementName, (Attribute[]) null);
+	}
+	
+	public ContentWriter element(Name elementName, Attribute... attributes) throws IOException {
 		
 		prepareForContent();
 		
@@ -210,11 +214,17 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theCurrentChild.open(elementName, theElementNameStack);
 		
-		Arrays.sort(attributes);
-		for (Attribute a : attributes)
-			theCurrentChild.attribute(a);
+		if (attributes != null) {
+			Arrays.sort(attributes);
+			for (Attribute a : attributes)
+				theCurrentChild.attribute(a);
+		}
 		
 		return theCurrentChild.content();
+	}
+	
+	public void emptyElement(Name elementName) throws IOException {
+		emptyElement(elementName, (Attribute[]) null);
 	}
 	
 	public void emptyElement(Name elementName, Attribute... attributes) throws IOException {
@@ -228,9 +238,11 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theCurrentChild.open(elementName, theElementNameStack);
 		
-		Arrays.sort(attributes);
-		for (Attribute a : attributes)
-			theCurrentChild.attribute(a);
+		if (attributes != null) {
+			Arrays.sort(attributes);
+			for (Attribute a : attributes)
+				theCurrentChild.attribute(a);
+		}
 		
 		theCurrentChild.close();
 		

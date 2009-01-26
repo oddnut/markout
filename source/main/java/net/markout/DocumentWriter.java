@@ -39,7 +39,9 @@ public interface DocumentWriter {
 							SystemLiteral systemID) throws IOException;
 	
 	// --- Root Element ---
+	public ContentWriter rootElement(Name elementName) throws IOException;
 	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException;
+	public void emptyRootElement(Name elementName) throws IOException;
 	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException;
 	
 	// --- Misc Document Parts ---
