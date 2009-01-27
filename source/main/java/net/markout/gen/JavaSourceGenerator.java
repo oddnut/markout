@@ -78,7 +78,7 @@ public class JavaSourceGenerator {
 	public String asConstantName(Attribute a) {
 		Name name = a.getName();
 		String n = substitutions.containsKey(name) ? (String) substitutions.get(name) : name.toString();
-		return asConstant(n + "_" + a.getValue().getUnquotedValue());
+		return asConstant(n + "_" + a.getValueString());
 	}
 	
 	public String asConstant(String name) {

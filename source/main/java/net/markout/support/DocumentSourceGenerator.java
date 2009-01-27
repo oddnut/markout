@@ -203,7 +203,7 @@ public class DocumentSourceGenerator {
 				write(ew);
 				write(".attribute(att(\"");
 				write(atts.getQName(i));
-				write("\"), val(\"");
+				write("\").att(\"");
 				write(atts.getValue(i));
 				writeln("\"));");
 			}

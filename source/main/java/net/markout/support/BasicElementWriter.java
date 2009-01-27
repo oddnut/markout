@@ -106,7 +106,10 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theWriter.write(att.getName());
 		theWriter.write(XMLChar.EQUALS_CHAR);
-		theWriter.write(att.getValue());
+		XMLChar quoteChar = att.getQuoteChar();
+		theWriter.write(quoteChar);
+		theWriter.write(att);
+		theWriter.write(quoteChar);
 	}
 	
 	// --- Writer State ---

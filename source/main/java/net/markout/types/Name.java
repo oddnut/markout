@@ -57,7 +57,7 @@ public class Name extends XMLString {
 	// *** Public Methods ***
 	public Attribute att(String attValue) {
 		
-		return new Attribute(this, new AttValue(attValue));
+		return new Attribute(this, attValue);
 	}
 	
 	// *** Protected Methods ***

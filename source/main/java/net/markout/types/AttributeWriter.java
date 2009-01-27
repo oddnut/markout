@@ -1,5 +1,5 @@
 /*
-	AttValueWriter.java
+	AttributeWriter.java
 	
 	Author: David Fogel
 	
@@ -14,42 +14,44 @@ package net.markout.types;
 // *** imports ***
 
 import java.io.*;
-import java.util.HashSet;
-import java.util.Set;
 
 import net.markout.IllegalXMLCharacterException;
 import net.markout.XML;
+import net.markout.types.Attribute.QuoteType;
 
 /**
- * AttValueWriter
+ * AttributeWriter
  *
  * Comment here.  Author: David Fogel
  */
-public class AttValueWriter extends Writer {
+public class AttributeWriter extends Writer {
 	// *** Class Members ***
 
 	// *** Instance Members ***
+	private Name name;
 	
-	private CharArrayWriter theChars;
+	private CharArrayWriter chars;
 	
-	private char theOuterQ;
-	private char theInnerQ;
-	
-	private Set<Name> theEntityRefs;
+	private Attribute.QuoteType quoteType;
 
 	// *** Constructors ***
 	
-	public AttValueWriter() {
-		theChars = new CharArrayWriter();
-		theOuterQ = 0;
-		theInnerQ = 0;
-		theEntityRefs = null;
+	public AttributeWriter(Name name) {
+		this(name, QuoteType.DOUBLE);
+	}
+	
+	public AttributeWriter(Name name, Attribute.QuoteType quoteType) {
+		this.name = name;
+		this.chars = new CharArrayWriter();
+		this.quoteType = quoteType;
+		if (quoteType == null)
+			throw new IllegalArgumentException("the QuoteType parameter may not be null");
 	}
 	
 	// *** Writer Methods ***
 	
-	public void write(char cbuf[], int offset, int length) throws IOException {
-		
+	public void write(char[] cbuf, int offset, int length) throws IOException {
+		char outerQ = quoteType.getQuoteChar().getChar();
 		int end = offset + length;
 		if (offset < 0 ||
 			offset > cbuf.length ||
@@ -66,35 +68,25 @@ public class AttValueWriter extends Writer {
 			
 			if (c == '&') {
 				
-				XML.AMPERSAND_REF.writeTo(theChars);
+				XML.AMPERSAND_REF.writeTo(chars);
 				
 			} else if (c == '<') {
 				
-				XML.LESS_THAN_REF.writeTo(theChars);
+				XML.LESS_THAN_REF.writeTo(chars);
 				
-			} else if (c == theOuterQ) { // we need to escape the quote being used for
+			} else if (c == outerQ) { // we need to escape the quote being used for
 										// enclosing the attribute value, whichever it is.
-				if (c == '"')
-					XML.DOUBLE_QUOTE_REF.writeTo(theChars);
-				else
-					XML.SINGLE_QUOTE_REF.writeTo(theChars);
+				quoteType.getQuoteRef().writeTo(chars);
 				
 			} else {
 				
-				if (c == '"' && theInnerQ == 0) {
-					theInnerQ = '"';
-					theOuterQ = '\'';
-				} else if (c == '\'' && theInnerQ == 0) {
-					theInnerQ = '\'';
-					theOuterQ = '"';
-				}
-				
-				theChars.write(c);
+				chars.write(c);
 			}
 		}
 	}
 	
 	public void write(String str, int offset, int length) throws IOException {
+		char outerQ = quoteType.getQuoteChar().getChar();
 		int strlen = str.length();
 		int end = offset + length;
 		if (offset < 0 ||
@@ -112,30 +104,19 @@ public class AttValueWriter extends Writer {
 			
 			if (c == '&') {
 				
-				XML.AMPERSAND_REF.writeTo(theChars);
+				XML.AMPERSAND_REF.writeTo(chars);
 				
 			} else if (c == '<') {
 				
-				XML.LESS_THAN_REF.writeTo(theChars);
+				XML.LESS_THAN_REF.writeTo(chars);
 				
-			} else if (c == theOuterQ) { // we need to escape the quote being used for
+			} else if (c == outerQ) { // we need to escape the quote being used for
 				// enclosing the attribute value, whichever it is.
-				if (c == '"')
-					XML.DOUBLE_QUOTE_REF.writeTo(theChars);
-				else
-					XML.SINGLE_QUOTE_REF.writeTo(theChars);
+				quoteType.getQuoteRef().writeTo(chars);
 				
 			} else {
 				
-				if (c == '"' && theInnerQ == 0) {
-					theInnerQ = '"';
-					theOuterQ = '\'';
-				} else if (c == '\'' && theInnerQ == 0) {
-					theInnerQ = '\'';
-					theOuterQ = '"';
-				}
-				
-				theChars.write(c);
+				chars.write(c);
 			}
 		}
 	}
@@ -145,33 +126,37 @@ public class AttValueWriter extends Writer {
 	}
 	
 	public void close() throws IOException {
+		flush();
 		// does nothing.
+	}
+	
+	// *** Object Methods ***
+	public String toString() {
+		return toAttribute().toString();
 	}
 
 	// *** Public Methods ***
 	
-	public AttValue toAttValue() {
-		String value = theChars.toString();
-		return new AttValue(value, theOuterQ != 0 ? theOuterQ : '"', theEntityRefs);
+	public Attribute toAttribute() {
+		String value = chars.toString();
+		return Attribute.createAttribtueForPreparsedValue(name, value, quoteType);
 	}
 	
 	public void reset() {
-		theChars.reset();
-		theOuterQ = 0;
-		theInnerQ = 0;
+		chars.reset();
 	}
 	
 	public void reference(CharRef charRef) throws IOException {
-		charRef.writeTo(theChars);
+		charRef.writeTo(chars);
 	}
 	
 	public void reference(Name entityName) throws IOException {
 		// keep track of which entities we add so we can validate them at elementWriter.attribute() time.
-		if (theEntityRefs == null)
-			theEntityRefs = new HashSet<Name>();
-		theEntityRefs.add(entityName);
+		//if (theEntityRefs == null)
+		//	theEntityRefs = new HashSet<Name>();
+		//theEntityRefs.add(entityName);
 		
-		entityName.writeTo(theChars);
+		entityName.writeTo(chars);
 	}
 
 	// *** Protected Methods ***

@@ -31,7 +31,6 @@ public abstract class GeneratedSourceDocument {
 	
 	private static Map<String, Name> ELEMENT_NAMES = new HashMap<String, Name>();
 	private static Map<String, Name> ATT_NAMES = new HashMap<String, Name>();
-	private static Map<String, AttValue> ATT_VALUES = new HashMap<String, AttValue>();
 	private static Map<String, Whitespace> SPACES = new HashMap<String, Whitespace>();
 	private static Map<String, Name> ENTITY_NAMES = new HashMap<String, Name>();
 
@@ -74,15 +73,6 @@ public abstract class GeneratedSourceDocument {
 			ATT_NAMES.put(name, n);
 		}
 		return n;
-	}
-	
-	public AttValue val(String val) {
-		AttValue v = ATT_VALUES.get(val);
-		if (v == null) {
-			v = new AttValue(val);
-			ATT_VALUES.put(val, v);
-		}
-		return v;
 	}
 	
 	public Whitespace sp(String space) {

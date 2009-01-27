@@ -93,7 +93,7 @@ public class SAXContentHandlerAdapter
 		int n = atts.getLength();
 		Attribute[] attributes = new Attribute[n];
 		for (int i = 0 ; i < n ; i++) {
-			attributes[i] = new Attribute(new Name(atts.getQName(i)), new AttValue(atts.getValue(i)));
+			attributes[i] = new Attribute(new Name(atts.getQName(i)), atts.getValue(i));
 		}
 		
 		try {

@@ -69,6 +69,9 @@ public class XMLChar extends XMLChunk {
 	}
 
 	// *** Public Methods ***
+	public char getChar() {
+		return theChar;
+	}
 	
 	public static final boolean isXMLChar(char c) {
 		return (c >= '\u0020' || 
