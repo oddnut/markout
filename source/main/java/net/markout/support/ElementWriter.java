@@ -25,6 +25,9 @@ public interface ElementWriter extends ContentWriter {
 
 	// *** Interface Methods ***
 	
+	// --- Namespace ---
+	public void prepareNamespace(Namespace parentNamespace);
+	
 	// --- Opening ---
 	public void open(Name elementName) throws IOException;
 	public void open(Name elementName, List<Name> parentElementNames) throws IOException;

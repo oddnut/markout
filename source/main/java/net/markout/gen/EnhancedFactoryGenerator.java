@@ -70,6 +70,9 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 			String factoryMethodPrefix) throws IOException {
 		
 		this.rootElement = rootElement;
+		NamespaceURI defaultNS = rootElement.getNamespaceURI();
+		if (defaultNS != null)
+			namespace.setDefaultNamespaceURI(defaultNS);
 		
 		publicIDs = new ArrayList<PublicIDLiteral>();
 		systems = new ArrayList<SystemLiteral>();
@@ -89,6 +92,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
+	
 	public void addDTD(PublicIDLiteral publicID, SystemLiteral systemID, String factoryMethodPrefix) {
 		publicIDs.add(publicID);
 		systems.add(systemID);
@@ -163,6 +167,8 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		
 		model.put("rootElementName", rootElement);
 		
+		model.put("namespace", namespace);
+		
 		model.put("names", names);
 		model.put("elements", elements.keySet());
 		model.put("attributes", attributes);
@@ -236,7 +242,20 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 									String mode,
 									String value) throws SAXException {
 			
-			Name name = new Name(attName);
+			NamespaceURI uri = namespace.getDefaultNamespaceURI();
+			int colon = attName.indexOf(':');
+			if (colon >= 0) {
+				String prefix = attName.substring(0, colon);
+				attName = attName.substring(colon + 1);
+				uri = namespace.findNamespaceURI(new Name(prefix));
+				
+				if (uri == null) {
+					System.out.println("WARNING! Skipped attribute with unknown prefix- " + prefix + ":" + attName);
+					return;
+				}
+			}
+			
+			Name name = new Name(uri, attName);
 			names.add(name);
 			
 			int i = type.indexOf('(');
@@ -254,7 +273,21 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		}
 
 		public void elementDecl(String name, String model) throws SAXException {
-			Name n = new Name(name);
+			
+			NamespaceURI uri = namespace.getDefaultNamespaceURI();
+			int colon = name.indexOf(':');
+			if (colon >= 0) {
+				String prefix = name.substring(0, colon);
+				name = name.substring(colon + 1);
+				uri = namespace.findNamespaceURI(new Name(prefix));
+				
+				if (uri == null) {
+					System.out.println("WARNING! Skipped element with unknown prefix- " + prefix + ":" + name);
+					return;
+				}
+			}
+			
+			Name n = new Name(uri, name);
 			names.add(n);
 			
 			Model m;

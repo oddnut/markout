@@ -28,6 +28,7 @@ public class XMLChar extends XMLChunk {
 	
 	public static final XMLChar AMPERSAND_CHAR = new XMLChar('&');
 	public static final XMLChar SEMICOLON_CHAR = new XMLChar(';');
+	public static final XMLChar COLON_CHAR = new XMLChar(':');
 	public static final XMLChar LESS_THAN_CHAR = new XMLChar('<');
 	public static final XMLChar GREATER_THAN_CHAR = new XMLChar('>');
 	public static final XMLChar SPACE_CHAR = new XMLChar(' ');

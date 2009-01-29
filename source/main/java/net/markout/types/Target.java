@@ -36,13 +36,13 @@ public class Target extends Name {
 	}
 
 	// *** Name Methods ***
-	
+	// TODO - rip this class out and just use regular Names instead (and make Name's stuff private instead of protected
 	protected void check() {
 		
 		super.check();
 		
-		if (theString.equalsIgnoreCase("xml"))
-			throw new IllegalXMLStringException(theString, "Target");
+		if (value.equalsIgnoreCase("xml"))
+			throw new IllegalXMLStringException(value, "Target");
 	}
 
 	// *** Public Methods ***

@@ -42,6 +42,8 @@ public class BasicElementWriter implements ElementWriter {
 	
 	private Name theName;
 	
+	private Namespace theNamespace;
+	
 	private ElementNameStack theElementNameStack;
 	
 	private State theState;
@@ -51,19 +53,24 @@ public class BasicElementWriter implements ElementWriter {
 	public BasicElementWriter(XMLChunkWriter out) {
 		
 		theWriter = out;
-		
 		theTextWriter = null;
-		
 		theCurrentChild = null;
-		
 		theName = null;
-		
+		theNamespace = new Namespace();
 		theElementNameStack = null;
 		
 		theState = State.CLOSED;
 	}
 	
 	// *** ElementWriter Methods ***
+	
+	// --- Namespace ---
+	public void prepareNamespace(Namespace parentNamespace) {
+		if (theState != State.CLOSED)
+			throw new MalformedXMLException("ElementWriter already opened.");
+		
+		theNamespace.setParent(parentNamespace);
+	}
 	
 	// --- Opening ---
 	public void open(Name elementName) throws IOException {
@@ -77,13 +84,14 @@ public class BasicElementWriter implements ElementWriter {
 		theState = State.OPEN_NEEDS_SPACE;
 		
 		theName = elementName;
+		
 		if (theElementNameStack == null || theElementNameStack.getParent() != parentElementNames)
 			theElementNameStack = new ElementNameStack(parentElementNames, elementName);
 		else
 			theElementNameStack.set(elementName);
 		
 		theWriter.write(XMLChar.LESS_THAN_CHAR);
-		theWriter.write(theName);
+		writeName(theName);
 	}
 	
 	// --- Attributes ---
@@ -104,7 +112,7 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theState = State.OPEN_NEEDS_SPACE;
 		
-		theWriter.write(att.getName());
+		writeName(att.getName());
 		theWriter.write(XMLChar.EQUALS_CHAR);
 		XMLChar quoteChar = att.getQuoteChar();
 		theWriter.write(quoteChar);
@@ -201,6 +209,37 @@ public class BasicElementWriter implements ElementWriter {
 		theWriter.write(XMLChar.SEMICOLON_CHAR);
 	}
 	
+	// --- Namespaces ---
+	public void defaultNamespace(NamespaceURI uri) throws IOException {
+		if (theState == State.CLOSED) {
+			
+			theNamespace.setDefaultNamespaceURI(uri);
+			
+		} else {
+			
+			prepareForContent();
+			
+			prepareChildElementWriter();
+			
+			theCurrentChild.defaultNamespace(uri);
+		}
+	}
+	
+	public void namespace(NamespaceURI uri) throws IOException {
+		if (theState == State.CLOSED) {
+			
+			theNamespace.namespaceURIPrefix(uri);
+			
+		} else {
+			
+			prepareForContent();
+			
+			prepareChildElementWriter();
+			
+			theCurrentChild.namespace(uri);
+		}
+	}
+	
 	// --- Element Content ---
 	public ContentWriter element(Name elementName) throws IOException {
 		return element(elementName, (Attribute[]) null);
@@ -212,8 +251,7 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theState = State.CHILD;
 		
-		if (theCurrentChild == null)
-			theCurrentChild = createChildElementWriter(theWriter);
+		prepareChildElementWriter();
 		
 		theCurrentChild.open(elementName, theElementNameStack);
 		
@@ -223,7 +261,9 @@ public class BasicElementWriter implements ElementWriter {
 				theCurrentChild.attribute(a);
 		}
 		
-		return theCurrentChild.content();
+		theCurrentChild.content();
+		
+		return theCurrentChild;	
 	}
 	
 	public void emptyElement(Name elementName) throws IOException {
@@ -236,8 +276,7 @@ public class BasicElementWriter implements ElementWriter {
 		
 		theState = State.CHILD;
 		
-		if (theCurrentChild == null)
-			theCurrentChild = createChildElementWriter(theWriter);
+		prepareChildElementWriter();
 		
 		theCurrentChild.open(elementName, theElementNameStack);
 		
@@ -331,15 +370,18 @@ public class BasicElementWriter implements ElementWriter {
 		
 		switch(theState) {
 		case OPEN:
+			writeNamespaceDeclarations();
 			theWriter.write(TAG_CLOSE_EMPTY);
 			break;
 			
 		case CONTENT:
 			theWriter.write(END_TAG_OPEN);
-			theWriter.write(theName);
+			writeName(theName);
 			theWriter.write(XMLChar.GREATER_THAN_CHAR);
 			break;
 		}
+		
+		theNamespace.clear();
 		
 		theState = State.CLOSED;
 		
@@ -350,8 +392,14 @@ public class BasicElementWriter implements ElementWriter {
 
 	// *** Public Methods ***
 
-	// --- Content ---
-	public ContentWriter content() throws IOException {
+	// *** Protected Methods ***
+	protected BasicElementWriter createChildElementWriter(XMLChunkWriter out) {
+		
+		return new BasicElementWriter(out);
+	}
+
+	// *** Package Methods ***
+	void content() throws IOException {
 		
 		switch(theState) {
 		case CLOSED:
@@ -360,28 +408,28 @@ public class BasicElementWriter implements ElementWriter {
 		case CONTENT:
 		case TEXT:
 		case CHILD:
-			return this; // already has content, return the ContentWriter view
+			return; // already has content
 		
 		case OPEN_NEEDS_SPACE:
 			//theWriter.write(XMLChar.SPACE_CHAR); // actually don't want this
 		}
 		
+		writeNamespaceDeclarations();
+		
 		theWriter.write(XMLChar.GREATER_THAN_CHAR);
 		
 		theState = State.CONTENT;
-		
-		return this;
 	}
-
-	// *** Protected Methods ***
-	protected BasicElementWriter createChildElementWriter(XMLChunkWriter out) {
-		
-		return new BasicElementWriter(out);
-	}
-
-	// *** Package Methods ***
 
 	// *** Private Methods ***
+	
+	private final void prepareChildElementWriter() {
+		
+		if (theCurrentChild == null)
+			theCurrentChild = createChildElementWriter(theWriter);
+		
+		theCurrentChild.prepareNamespace(theNamespace);
+	}
 	
 	private void prepareForContent() throws IOException {
 		switch(theState) {
@@ -401,6 +449,56 @@ public class BasicElementWriter implements ElementWriter {
 		}
 		
 		theState = State.CONTENT;
+	}
+	
+	private final void writeName(Name name) throws IOException {
+		NamespaceURI uri = name.getNamespaceURI();
+		if (uri == null || theNamespace.isDefaultNamespaceURI(uri)) {
+			
+			theWriter.write(name);
+			
+		} else {
+			
+			theWriter.write(theNamespace.namespaceURIPrefix(uri));
+			theWriter.write(XMLChar.COLON_CHAR);
+			theWriter.write(name);
+		}
+	}
+	
+	private final void writeNamespaceDeclarations() throws IOException {
+		
+		if (!theNamespace.isOpen())
+			throw new MalformedXMLException("can't write namespace declaration more than once");
+		
+		NamespaceURI defaultNS = theNamespace.getOwnDefaultNamespaceURI();
+		if (defaultNS != null) {
+			theWriter.write(Whitespace.SPACE);
+			theWriter.write(NamespaceURI.XMLNS_PREFIX);
+			theWriter.write(XMLChar.EQUALS_CHAR);
+			XMLChar q = defaultNS.getQuoteChar();
+			theWriter.write(q);
+			theWriter.write(defaultNS);
+			theWriter.write(q);
+		}
+		
+		List<NamespaceURI> prefixed = theNamespace.getOwnPrefixedNamespaceURIs();
+		if (prefixed != null && !prefixed.isEmpty()) {
+			int len = prefixed.size();
+			for (int i = 0 ; i < len ; i++) {
+				NamespaceURI uri = prefixed.get(i);
+				theWriter.write(Whitespace.SPACE);
+				theWriter.write(NamespaceURI.XMLNS_PREFIX);
+				theWriter.write(XMLChar.COLON_CHAR);
+				theWriter.write(uri.getPreferredPrefix());
+				theWriter.write(XMLChar.EQUALS_CHAR);
+				XMLChar q = uri.getQuoteChar();
+				theWriter.write(q);
+				theWriter.write(uri);
+				theWriter.write(q);
+			}
+		}
+			
+		theNamespace.close();
 	}
 
 	// *** Private Classes ***

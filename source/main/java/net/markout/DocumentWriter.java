@@ -38,6 +38,10 @@ public interface DocumentWriter {
 							PublicIDLiteral publicID,
 							SystemLiteral systemID) throws IOException;
 	
+	// --- Namespaces ---
+	public void defaultNamespace(NamespaceURI uri) throws IOException;
+	public void namespace(NamespaceURI uri) throws IOException;
+	
 	// --- Root Element ---
 	public ContentWriter rootElement(Name elementName) throws IOException;
 	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException;

@@ -25,15 +25,14 @@ import net.markout.types.CharRef;
  */
 public class XML {
 	// *** Class Members ***
-
-	// *** Instance Members ***
-	
 	public static final CharRef AMPERSAND_REF = new CharRef('&');
 	public static final CharRef PERCENT_REF = new CharRef('%');
 	public static final CharRef LESS_THAN_REF = new CharRef('<');
 	public static final CharRef GREATER_THAN_REF = new CharRef('>');
 	public static final CharRef SINGLE_QUOTE_REF = new CharRef('\'');
 	public static final CharRef DOUBLE_QUOTE_REF = new CharRef('"');
+
+	// *** Instance Members ***
 
 	// *** Constructors ***
 

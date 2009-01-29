@@ -17,7 +17,7 @@ import java.io.*;
 
 import net.markout.IllegalXMLCharacterException;
 import net.markout.XML;
-import net.markout.types.Attribute.QuoteType;
+import net.markout.types.AttValue.QuoteType;
 
 /**
  * AttributeWriter
@@ -32,7 +32,7 @@ public class AttributeWriter extends Writer {
 	
 	private CharArrayWriter chars;
 	
-	private Attribute.QuoteType quoteType;
+	private AttValue.QuoteType quoteType;
 
 	// *** Constructors ***
 	

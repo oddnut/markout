@@ -44,6 +44,10 @@ public interface ContentWriter {
 	public void reference(CharRef charRef) throws IOException;
 	public void reference(Name entityName) throws IOException;
 	
+	// --- Namespaces ---
+	public void defaultNamespace(NamespaceURI uri) throws IOException;
+	public void namespace(NamespaceURI uri) throws IOException;
+	
 	// --- Element Content ---
 	public ContentWriter element(Name elementName) throws IOException;
 	public ContentWriter element(Name elementName, Attribute... attributes) throws IOException;

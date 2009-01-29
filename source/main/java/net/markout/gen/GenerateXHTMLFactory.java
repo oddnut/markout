@@ -21,6 +21,8 @@ import net.markout.types.*;
  * Comment here.
  */
 public class GenerateXHTMLFactory {
+	static NamespaceURI XHTML_NS = new NamespaceURI("http://www.w3.org/1999/xhtml");
+	
 	static PublicIDLiteral STRICT_PUBLIC_ID = new PublicIDLiteral("-//W3C//DTD XHTML 1.0 Strict//EN");
 	static SystemLiteral STRICT_SYSTEM_ID = new SystemLiteral("http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd");
 	static PublicIDLiteral TRANSITIONAL_PUBLIC_ID = new PublicIDLiteral("-//W3C//DTD XHTML 1.0 Transitional//EN");
@@ -31,7 +33,7 @@ public class GenerateXHTMLFactory {
 	public static void main(String[] args) throws IOException, TemplateException {
 		
 		EnhancedFactoryGenerator fgen = 
-			new EnhancedFactoryGenerator(new Name("html"), STRICT_PUBLIC_ID, STRICT_SYSTEM_ID, "strict");
+			new EnhancedFactoryGenerator(new Name(XHTML_NS, "html"), STRICT_PUBLIC_ID, STRICT_SYSTEM_ID, "strict");
 
 		fgen.addDTD(TRANSITIONAL_PUBLIC_ID, TRANSITIONAL_SYSTEM_ID, "transitional");
 

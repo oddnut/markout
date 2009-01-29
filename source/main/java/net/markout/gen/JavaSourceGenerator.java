@@ -13,8 +13,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import net.markout.support.Namespace;
 import net.markout.types.Attribute;
 import net.markout.types.Name;
+import net.markout.types.NamespaceURI;
 
 /**
  * JavaSourceGenerator
@@ -38,16 +40,21 @@ public class JavaSourceGenerator {
 
 	// *** Instance Members ***
 	private Map<Name, String> substitutions;
+	protected Namespace namespace;
 
 	// *** Constructors ***
 	public JavaSourceGenerator() {
 		
 		substitutions = new HashMap<Name,String>();
+		
+		namespace = new Namespace();
 	}
 
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
+	public Namespace getNamespace() {return namespace;}
+	
 	public void addSubstitution(Name name, String methodName) {
 		
 		checkValidMethodName(methodName);
@@ -72,13 +79,21 @@ public class JavaSourceGenerator {
 	
 	public String asConstantName(Name name) {
 		String n = substitutions.containsKey(name) ? (String) substitutions.get(name) : name.toString();
+		NamespaceURI uri = name.getNamespaceURI();
+		if (uri != null && !namespace.isDefaultNamespaceURI(uri))
+			n = namespace.namespaceURIPrefix(uri).toString() + ":" + n; // the colon will be replaced in the next step.
 		return asConstant(n);
 	}
 	
 	public String asConstantName(Attribute a) {
 		Name name = a.getName();
-		String n = substitutions.containsKey(name) ? (String) substitutions.get(name) : name.toString();
-		return asConstant(n + "_" + a.getValueString());
+		return asConstantName(name) + "_" + asConstant(a.getValueString());
+	}
+	
+	public String asConstantName(NamespaceURI uri) {
+		if (namespace.isDefaultNamespaceURI(uri))
+			return "NAMESPACE";
+		return asConstant(namespace.namespaceURIPrefix(uri).toString()) + "_NAMESPACE";
 	}
 	
 	public String asConstant(String name) {

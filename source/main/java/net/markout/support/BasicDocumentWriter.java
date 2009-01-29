@@ -162,6 +162,33 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 		return this;
 	}
 	
+	// --- Namespaces ---
+	public void defaultNamespace(NamespaceURI uri) throws IOException {
+		switch(theState) {
+		case START:
+		case VERSION:
+		case DTD:
+			break;
+		default:
+			throw new MalformedXMLException("Root Namespace modified after root element started");
+		}
+		
+		theElementWriter.defaultNamespace(uri);
+	}
+	
+	public void namespace(NamespaceURI uri) throws IOException {
+		switch(theState) {
+		case START:
+		case VERSION:
+		case DTD:
+			break;
+		default:
+			throw new MalformedXMLException("Root Namespace modified after root element started");
+		}
+		
+		theElementWriter.namespace(uri);
+	}
+	
 	// --- Root Element ---
 	public ContentWriter rootElement(Name elementName) throws IOException {
 		return rootElement(elementName, (Attribute[]) null);
@@ -186,7 +213,9 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 				theElementWriter.attribute(a);
 		}
 		
-		return theElementWriter.content();
+		theElementWriter.content();
+		
+		return theElementWriter;
 	}
 	
 	public void emptyRootElement(Name elementName) throws IOException {

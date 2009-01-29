@@ -21,8 +21,16 @@ import net.markout.types.*;
  */
 public class ${factoryClassName} extends DocumentWriterFactory {
 	// *** Class Members ***
+	<#if namespace.defaultNamespaceURI??>
+	public static final NamespaceURI ${generator.asConstantName(namespace.defaultNamespaceURI)} = new NamespaceURI("${namespace.defaultNamespaceURI}");
+	</#if>
+	<#list namespace.allPrefixedNamespaceURIs as uri>
+	public static final NamespaceURI ${generator.asConstantName(uri)} = new NamespaceURI("${uri}", "${uri.preferredPrefix}");
+	</#list>
+	
 	<#list names as name>
-	public static final Name ${generator.asConstantName(name)} = new Name("${name}");
+	<#assign uri = name.getNamespaceURI() />
+	public static final Name ${generator.asConstantName(name)} = new Name(${generator.asConstantName(uri)},"${name}");
 	</#list>
 	
 	<#list attributes as attribute>
