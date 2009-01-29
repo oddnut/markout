@@ -103,13 +103,14 @@ public class Namespace {
 		if (prefixURIs != null)
 			prefixURIs.clear();
 		open = true;
-		lastGeneratedPrefixCount = parent != null ? parent.lastGeneratedPrefixCount + 1 : 0;
+		lastGeneratedPrefixCount = parent != null ? parent.lastGeneratedPrefixCount : 0;
 	}
 	
 	public Namespace getParent() {return parent;}
 	
 	public void setParent(Namespace parent) {
 		this.parent = parent != null ? parent : MANDATORY_NAMESPACE;
+		lastGeneratedPrefixCount = parent != null ? parent.lastGeneratedPrefixCount : 0;
 	}
 	
 	public NamespaceURI getOwnDefaultNamespaceURI() {

@@ -327,6 +327,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, STRICT_PUBLIC_ID, STRICT_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
@@ -335,6 +336,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, STRICT_PUBLIC_ID, STRICT_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
@@ -346,6 +348,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, TRANSITIONAL_PUBLIC_ID, TRANSITIONAL_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
@@ -354,6 +357,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, TRANSITIONAL_PUBLIC_ID, TRANSITIONAL_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
@@ -365,6 +369,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, FRAMESET_PUBLIC_ID, FRAMESET_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
@@ -373,6 +378,7 @@ public class XHTML extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(HTML, FRAMESET_PUBLIC_ID, FRAMESET_SYSTEM_ID);
+		dw.defaultNamespace(NAMESPACE);
 		return dw;
 	}
 	

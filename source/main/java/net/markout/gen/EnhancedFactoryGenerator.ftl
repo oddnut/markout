@@ -55,6 +55,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
+		<#if namespace.defaultNamespaceURI??>
+		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
+		</#if>
 		return dw;
 	}
 	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
@@ -63,6 +66,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
+		<#if namespace.defaultNamespaceURI??>
+		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
+		</#if>
 		return dw;
 	}
 	</#list>
@@ -79,6 +85,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
+		<#if namespace.defaultNamespaceURI??>
+		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
+		</#if>
 		return dw;
 	}
 	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
@@ -87,6 +96,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 			dw.xmlVersion();
 		if (declareDTD)
 			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
+		<#if namespace.defaultNamespaceURI??>
+		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
+		</#if>
 		return dw;
 	}
 	</#list>
