@@ -5,9 +5,14 @@ Bundle-SymbolicName: net.markout
 Bundle-Version: 1.0.0
 Bundle-Vendor: markout.net
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
-Import-Package: org.slf4j;version="1.5.5"
+Import-Package: javax.xml.stream;version="1.0.1",
+ javax.xml.stream.events;version="1.0.1",
+ javax.xml.stream.util;version="1.0.1",
+ org.slf4j;version="1.5.5",
+ org.xml.sax,
+ org.xml.sax.ext
 Export-Package: net.markout,
  net.markout.support,
  net.markout.types,
  net.markout.xhtml
-Require-Bundle: freemarker;bundle-version="2.3.15"
+Require-Bundle: org.freemarker;bundle-version="2.3.15"

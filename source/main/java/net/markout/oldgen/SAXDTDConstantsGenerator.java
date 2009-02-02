@@ -9,7 +9,7 @@
 */
 
 // *** package ***
-package net.markout.support;
+package net.markout.oldgen;
 
 // *** imports ***
 import java.io.IOException;
