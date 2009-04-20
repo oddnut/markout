@@ -32,7 +32,7 @@ public abstract class XMLChunk {
 	private static ArrayList<Charset> theCharsetIndexes = new ArrayList<Charset>();
 
 	// *** Instance Members ***
-	private byte[][] theByteCache;
+	private transient byte[][] theByteCache;
 
 	// *** Constructors ***
 	
