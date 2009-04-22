@@ -10,6 +10,7 @@ Import-Package: freemarker.core;resolution:=optional,
  javax.xml.stream;version="1.0.1",
  javax.xml.stream.events;version="1.0.1",
  javax.xml.stream.util;version="1.0.1",
+ nu.xom;resolution:=optional,
  org.slf4j;version="1.5.5",
  org.xml.sax,
  org.xml.sax.ext

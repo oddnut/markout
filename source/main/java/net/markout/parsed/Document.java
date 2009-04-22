@@ -11,6 +11,7 @@ package net.markout.parsed;
 import java.io.IOException;
 
 import net.markout.ContentWriter;
+import net.markout.types.NamespaceURI;
 
 /**
  * ParsedXML
@@ -21,5 +22,7 @@ public interface Document {
 	// *** Class Members ***
 
 	// *** Interface Methods ***
-	public void writeTo(ContentWriter out, ContentSelector selector) throws IOException;
+	public void writeTo(ContentWriter out) throws IOException;
+	public void writeTo(ContentWriter out, String xpath) throws IOException;
+	public void writeTo(ContentWriter out, String xpath, NamespaceURI... namespaceURIs) throws IOException;
 }
