@@ -8,6 +8,7 @@
 
 package net.markout.parsed.xom;
 
+import net.markout.parsed.EmptyElementPolicy;
 import nu.xom.Document;
 import nu.xom.Element;
 import nu.xom.NodeFactory;
@@ -23,14 +24,26 @@ public class MarkoutNodeFactory extends NodeFactory {
 	// *** Class Members ***
 
 	// *** Instance Members ***
+	private EmptyElementPolicy emptyPolicy;
 
 	// *** Constructors ***
+	public MarkoutNodeFactory() {
+		this(null);
+	}
+	
+	public MarkoutNodeFactory(EmptyElementPolicy emptyPolicy) {
+		this.emptyPolicy = emptyPolicy;
+	}
 
 	// *** NodeFactory Methods ***
 	
 	@Override
 	public Document startMakingDocument() {
-		return new MDocument(new Element("root", "http://www.xom.nu/fakeRoot"));
+		MDocument md = new MDocument(new Element("root", "http://www.xom.nu/fakeRoot"));
+		if (emptyPolicy != null)
+			md.setEmptyElementPolicy(emptyPolicy);
+		
+		return md;
 	}
 
 	@Override

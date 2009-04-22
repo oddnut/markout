@@ -61,7 +61,7 @@ public class MDocument extends Document implements net.markout.parsed.Document {
 		
 		if (xpath == null) {
 			
-			XOMAdapter.writeTo(out, getRootElement());
+			XOMAdapter.writeTo(out, getRootElement(), emptyPolicy);
 			return;
 		}
 		
@@ -86,6 +86,10 @@ public class MDocument extends Document implements net.markout.parsed.Document {
 	// *** Public Methods ***
 	public void setEmptyElementPolicy(EmptyElementPolicy emptyPolicy) {
 		this.emptyPolicy = emptyPolicy;
+	}
+	
+	public EmptyElementPolicy getEmptyElementPolicy() {
+		return emptyPolicy;
 	}
 
 	// *** Protected Methods ***

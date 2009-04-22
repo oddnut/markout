@@ -149,7 +149,7 @@ public class XOMAdapter {
 			
 			for (int i = 0 ; i < childCount ; i++) {
 				
-				writeTo(cw, e.getChild(i));
+				writeTo(cw, e.getChild(i), emptyPolicy);
 			}
 		}
 	}

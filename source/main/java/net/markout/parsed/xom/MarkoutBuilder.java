@@ -10,6 +10,7 @@ package net.markout.parsed.xom;
 
 import org.xml.sax.XMLReader;
 
+import net.markout.parsed.EmptyElementPolicy;
 import nu.xom.Builder;
 import nu.xom.NodeFactory;
 
@@ -20,21 +21,33 @@ import nu.xom.NodeFactory;
  */
 public class MarkoutBuilder extends Builder {
 	// *** Class Members ***
-	private static NodeFactory NODE_FACTORY = new MarkoutNodeFactory();
+	private static NodeFactory DEFAULT_NODE_FACTORY = new MarkoutNodeFactory();
 
 	// *** Instance Members ***
 
 	// *** Constructors ***
 	public MarkoutBuilder() {
-		super(NODE_FACTORY);
+		super(DEFAULT_NODE_FACTORY);
+	}
+	
+	public MarkoutBuilder(EmptyElementPolicy emptyPolicy) {
+		super(new MarkoutNodeFactory(emptyPolicy));
 	}
 	
 	public MarkoutBuilder(boolean validate) {
-		super(validate, NODE_FACTORY);
+		super(validate, DEFAULT_NODE_FACTORY);
+	}
+	
+	public MarkoutBuilder(boolean validate, EmptyElementPolicy emptyPolicy) {
+		super(validate, new MarkoutNodeFactory(emptyPolicy));
 	}
 	
 	public MarkoutBuilder(XMLReader parser, boolean validate) {
-		super(parser, validate, NODE_FACTORY);
+		super(parser, validate, DEFAULT_NODE_FACTORY);
+	}
+	
+	public MarkoutBuilder(XMLReader parser, boolean validate, EmptyElementPolicy emptyPolicy) {
+		super(parser, validate, new MarkoutNodeFactory(emptyPolicy));
 	}
 
 	// *** Interface Methods ***
