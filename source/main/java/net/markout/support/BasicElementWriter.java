@@ -342,6 +342,11 @@ public class BasicElementWriter implements ElementWriter {
 		out.writer.write(space);
 	}
 	
+	// --- Custom Content ---
+	public void content(Content c) throws IOException {
+		c.writeTo(this);
+	}
+	
 	// --- Closing ---
 	public void close() throws IOException {
 		

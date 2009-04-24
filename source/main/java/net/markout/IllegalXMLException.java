@@ -28,6 +28,10 @@ public class IllegalXMLException extends RuntimeException {
 	public IllegalXMLException(String message) {
 		super(message);
 	}
+	
+	public IllegalXMLException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 	// *** Interface Methods ***
 

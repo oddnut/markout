@@ -58,6 +58,9 @@ public interface ContentWriter {
 	public void comment(Comment c) throws IOException;
 	public void pi(Target target, Instruction instruction) throws IOException;
 	public void space(Whitespace space) throws IOException;
+	
+	// --- Custom Content ---
+	public void content(Content c) throws IOException;
 }
 
 

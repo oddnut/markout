@@ -28,6 +28,10 @@ public class MalformedXMLException extends IllegalXMLException {
 	public MalformedXMLException(String message) {
 		super(message);
 	}
+	
+	public MalformedXMLException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
 	// *** Interface Methods ***
 

@@ -67,6 +67,11 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 
 	// *** DocumentWriter Methods ***
 	
+	// --- Empty Element Policy ---
+	public void setEmptyElementPolicy(EmptyElementPolicy emptyPolicy) {
+		out.setEmptyElementPolicy(emptyPolicy);
+	}
+	
 	// --- XML Version Declaration ---
 	public void xmlVersion() throws IOException {
 		

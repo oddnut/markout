@@ -28,6 +28,9 @@ public interface DocumentWriter {
 	// --- Whitespace Policy ---
 	// public void setWhitespacePolicy(WhitespacePolicy policy);
 	
+	// --- Empty Element Policy ---
+	public void setEmptyElementPolicy(EmptyElementPolicy emptyPolicy);
+	
 	// --- XML Version Declaration ---
 	public void xmlVersion() throws IOException;
 	public void xmlVersion(EncName encoding) throws IOException;
