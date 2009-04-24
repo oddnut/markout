@@ -34,7 +34,7 @@ public class ${docWriterClassName} extends BasicDocumentWriter {
 	</#if>
 
 	// *** Constructors ***
-	public ${docWriterClassName}(XMLChunkWriter out) {super(out);}
+	public ${docWriterClassName}(XMLOutputContext out) {super(out);}
 
 	// *** Public Methods ***
 	
@@ -55,7 +55,7 @@ public class ${docWriterClassName} extends BasicDocumentWriter {
 	</#if>
 
 	// *** Protected Methods ***
-	protected BasicElementWriter createRootElementWriter(XMLChunkWriter out) {
+	protected BasicElementWriter createRootElementWriter(XMLOutputContext out) {
 		return new ${elementWriterClassName}(out);
 	}
 

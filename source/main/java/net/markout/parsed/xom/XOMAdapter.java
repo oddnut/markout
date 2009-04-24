@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Collection;
 
 import net.markout.ContentWriter;
-import net.markout.parsed.EmptyElementPolicy;
 import net.markout.types.Attribute;
 import net.markout.types.Instruction;
 import net.markout.types.Name;
@@ -34,25 +33,11 @@ import nu.xom.Text;
 public class XOMAdapter {
 	// *** Class Members ***
 	
-	public static EmptyElementPolicy DEFAULT_EMPTY_ELEMENT_POLICY = new EmptyElementPolicy() {
-		public boolean isRenderedAsEmptyElement(Name elementName) {
-			return true;
-		}
-	};
-	
 	public static void writeTo(ContentWriter out, Document doc) throws IOException {
-		writeElementTo(out, doc.getRootElement(), DEFAULT_EMPTY_ELEMENT_POLICY);
-	}
-	
-	public static void writeTo(ContentWriter out, Document doc, EmptyElementPolicy emptyPolicy) throws IOException {
-		writeElementTo(out, doc.getRootElement(), emptyPolicy);
+		writeElementTo(out, doc.getRootElement());
 	}
 	
 	public static void writeTo(ContentWriter out, Nodes nodes) throws IOException {
-		writeTo(out, nodes, DEFAULT_EMPTY_ELEMENT_POLICY);
-	}
-	
-	public static void writeTo(ContentWriter out, Nodes nodes, EmptyElementPolicy emptyPolicy) throws IOException {
 		int size = nodes.size();
 		for (int i = 0 ; i < size ; i++) {
 			writeTo(out, nodes.get(i));
@@ -60,13 +45,9 @@ public class XOMAdapter {
 	}
 	
 	public static void writeTo(ContentWriter out, Node node) throws IOException {
-		writeTo(out, node, DEFAULT_EMPTY_ELEMENT_POLICY);
-	}
-	
-	public static void writeTo(ContentWriter out, Node node, EmptyElementPolicy emptyPolicy) throws IOException {
 		
 		if (node instanceof Element)
-			writeElementTo(out, (Element) node, emptyPolicy);
+			writeElementTo(out, (Element) node);
 		else if (node instanceof Text)
 			writeTextTo(out, (Text) node);
 		else if (node instanceof Comment)
@@ -74,17 +55,13 @@ public class XOMAdapter {
 		else if (node instanceof ProcessingInstruction)
 			writePITo(out, (ProcessingInstruction) node);
 		else if (node instanceof Document)
-			writeElementTo(out, ((Document) node).getRootElement(), emptyPolicy);
+			writeElementTo(out, ((Document) node).getRootElement());
 		else
 			throw new UnsupportedOperationException("Unsupported Node subclass: " + 
 					node.getClass().getCanonicalName());
 	}
 	
 	public static void writeElementTo(ContentWriter out, Element e) throws IOException {
-		writeElementTo(out, e, DEFAULT_EMPTY_ELEMENT_POLICY);
-	}
-	
-	public static void writeElementTo(ContentWriter out, Element e, EmptyElementPolicy emptyPolicy) throws IOException {
 		
 		Name name = null;
 		
@@ -129,10 +106,8 @@ public class XOMAdapter {
 		}
 		
 		int childCount = e.getChildCount();
-		// here's where we make sure to render elements as "empty elements"
-		// only if they are allowed according to an EmptyElementPolicy
-		// e.g. <img /> versus <img></img>
-		if (childCount == 0 && emptyPolicy.isRenderedAsEmptyElement(name)) {
+		
+		if (childCount == 0) {
 			
 			if (atts == null)
 				out.emptyElement(name);
@@ -140,6 +115,7 @@ public class XOMAdapter {
 				out.emptyElement(name, atts);
 			
 		} else {
+			
 			ContentWriter cw = null;
 			
 			if (atts == null)
@@ -149,7 +125,7 @@ public class XOMAdapter {
 			
 			for (int i = 0 ; i < childCount ; i++) {
 				
-				writeTo(cw, e.getChild(i), emptyPolicy);
+				writeTo(cw, e.getChild(i));
 			}
 		}
 	}

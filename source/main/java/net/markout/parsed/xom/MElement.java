@@ -8,8 +8,11 @@
 
 package net.markout.parsed.xom;
 
+import java.io.IOException;
 import java.util.*;
 
+import net.markout.Content;
+import net.markout.ContentWriter;
 import net.markout.types.Name;
 import net.markout.types.NamespaceURI;
 import nu.xom.Element;
@@ -20,7 +23,7 @@ import nu.xom.Node;
  * 
  * Comment here.
  */
-public class MElement extends Element {
+public class MElement extends Element implements Content {
 	// *** Class Members ***
 
 	// *** Instance Members ***
@@ -94,6 +97,11 @@ public class MElement extends Element {
 		
 		if (markoutNamespaces != null)
 			markoutNamespaces.remove(prefix);
+	}
+	
+	// *** Content Methods ***
+	public void writeTo(ContentWriter out) throws IOException {
+		XOMAdapter.writeElementTo(out, this);
 	}
 
 	// *** Public Methods ***

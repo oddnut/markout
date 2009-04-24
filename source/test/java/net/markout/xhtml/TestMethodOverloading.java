@@ -27,6 +27,8 @@ public class TestMethodOverloading {
 		cw = cw.body();
 		cw.h1(CLASS.att("foo")).text("Yeah yeah yeah!");
 		cw.p().a(HREF.att("http://markout.net/")).text("booya");
+		cw.img(SRC.att("http://foo.com/img.jpg"));
+		cw.p();
 		
 		dw.close();
 	}

@@ -42,17 +42,17 @@ public class XML {
 	
 	public static DocumentWriter documentWriter(Writer dest) throws IOException {
 		
-		return new BasicDocumentWriter(new WriterXMLChunkWriter(dest));
+		return new BasicDocumentWriter(new XMLOutputContext(new WriterXMLChunkWriter(dest)));
 	}
 	
 	public static DocumentWriter documentWriter(OutputStream dest) throws IOException {
 		
-		return new BasicDocumentWriter(new OSXMLChunkWriter(dest));
+		return new BasicDocumentWriter(new XMLOutputContext(new OSXMLChunkWriter(dest)));
 	}
 	
 	public static DocumentWriter documentWriter(OutputStream dest, String charsetName) throws IOException {
 		
-		return new BasicDocumentWriter(new OSXMLChunkWriter(dest, charsetName));
+		return new BasicDocumentWriter(new XMLOutputContext(new OSXMLChunkWriter(dest, charsetName)));
 	}
 
 	// *** Protected Methods ***

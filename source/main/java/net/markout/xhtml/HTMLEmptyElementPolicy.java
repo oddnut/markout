@@ -12,7 +12,7 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import net.markout.parsed.EmptyElementPolicy;
+import net.markout.EmptyElementPolicy;
 import net.markout.types.Name;
 import static net.markout.xhtml.XHTML.*;
 
@@ -31,8 +31,12 @@ public class HTMLEmptyElementPolicy implements EmptyElementPolicy {
 	// *** Constructors ***
 
 	// *** EmptyElementPolicy Methods ***
-	public boolean isRenderedAsEmptyElement(Name elementName) {
+	public boolean isRenderableAsEmptyElement(Name elementName) {
 		return EMPTY.contains(elementName);
+	}
+	
+	public boolean requiresSpaceBeforeClosing() {
+		return true;
 	}
 
 	// *** Public Methods ***

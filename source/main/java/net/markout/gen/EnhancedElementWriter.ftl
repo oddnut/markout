@@ -32,7 +32,7 @@ public class ${elementWriterClassName} extends BasicElementWriter implements ${c
 	</#if>
 	
 	// *** Constructors ***
-	public ${elementWriterClassName}(XMLChunkWriter out) {super(out);}
+	public ${elementWriterClassName}(XMLOutputContext out) {super(out);}
 
 	// *** ${contentWriterClassName} Methods ***
 	<#list elements as name>
@@ -58,7 +58,7 @@ public class ${elementWriterClassName} extends BasicElementWriter implements ${c
 	</#list>
 
 	// *** Protected Methods ***
-	protected BasicElementWriter createChildElementWriter(XMLChunkWriter out) {
+	protected BasicElementWriter createChildElementWriter(XMLOutputContext out) {
 		return new ${elementWriterClassName}(out);
 	}
 

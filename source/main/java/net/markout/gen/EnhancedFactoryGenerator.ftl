@@ -50,7 +50,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 		return ${prefix}DocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
 	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		${docWriterClassName} dw = new ${docWriterClassName}(new OSXMLChunkWriter(out, charset));
+		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		${docWriterClassName} dw = new ${docWriterClassName}(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -61,7 +63,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 		return dw;
 	}
 	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		${docWriterClassName} dw = new ${docWriterClassName}(new WriterXMLChunkWriter(out));
+		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		${docWriterClassName} dw = new ${docWriterClassName}(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -80,7 +84,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 		return ${prefix}DocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
 	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		DocumentWriter dw = new BasicDocumentWriter(new OSXMLChunkWriter(out, charset));
+		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		DocumentWriter dw = new BasicDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -91,7 +97,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 		return dw;
 	}
 	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		DocumentWriter dw = new BasicDocumentWriter(new WriterXMLChunkWriter(out));
+		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		DocumentWriter dw = new BasicDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)

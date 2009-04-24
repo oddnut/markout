@@ -25,7 +25,7 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	// *** Class Members ***
 	
 	// *** Constructors ***
-	public HtmlElementWriter(XMLChunkWriter out) {super(out);}
+	public HtmlElementWriter(XMLOutputContext out) {super(out);}
 
 	// *** HtmlContentWriter Methods ***
 	
@@ -667,7 +667,7 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 
 	// *** Protected Methods ***
-	protected BasicElementWriter createChildElementWriter(XMLChunkWriter out) {
+	protected BasicElementWriter createChildElementWriter(XMLOutputContext out) {
 		return new HtmlElementWriter(out);
 	}
 

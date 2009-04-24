@@ -322,7 +322,9 @@ public class XHTML extends DocumentWriterFactory {
 		return strictDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
 	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new OSXMLChunkWriter(out, charset));
+		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -331,7 +333,9 @@ public class XHTML extends DocumentWriterFactory {
 		return dw;
 	}
 	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new WriterXMLChunkWriter(out));
+		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -343,7 +347,9 @@ public class XHTML extends DocumentWriterFactory {
 		return transitionalDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new OSXMLChunkWriter(out, charset));
+		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -352,7 +358,9 @@ public class XHTML extends DocumentWriterFactory {
 		return dw;
 	}
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new WriterXMLChunkWriter(out));
+		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -364,7 +372,9 @@ public class XHTML extends DocumentWriterFactory {
 		return framesetDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
 	}
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new OSXMLChunkWriter(out, charset));
+		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)
@@ -373,7 +383,9 @@ public class XHTML extends DocumentWriterFactory {
 		return dw;
 	}
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(new WriterXMLChunkWriter(out));
+		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
+		XMLOutputContext oc = new XMLOutputContext(cw);
+		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
 		if (declareDTD)

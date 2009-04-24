@@ -1,7 +1,7 @@
 /*
 	BasicDocumentWriter.java
 
-	Copyright 2004-2007 David Fogel
+	Copyright 2004-2009 David Fogel
 	All rights reserved.
 */
 
@@ -48,21 +48,21 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 
 	// *** Instance Members ****
 	
-	private XMLChunkWriter theWriter;
+	private XMLOutputContext out;
 	
-	private BasicElementWriter theElementWriter;
+	private BasicElementWriter elementWriter;
 	
-	private State theState;
+	private State state;
 
 	// *** Constructors ***
 	
-	public BasicDocumentWriter(XMLChunkWriter out) {
+	public BasicDocumentWriter(XMLOutputContext outputContext) {
 		
-		theWriter = out;
+		this.out = outputContext;
 		
-		theState = State.START;
+		state = State.START;
 		
-		theElementWriter = createRootElementWriter(theWriter);
+		elementWriter = createRootElementWriter(out);
 	}
 
 	// *** DocumentWriter Methods ***
@@ -70,58 +70,58 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	// --- XML Version Declaration ---
 	public void xmlVersion() throws IOException {
 		
-		if (theState != State.START)
+		if (state != State.START)
 			throw new MalformedXMLException("XML Version declared at illegal location.");
-		theState = State.VERSION;
+		state = State.VERSION;
 		
-		theWriter.write(VERSION_START);
-		theWriter.write(VERSION_END);
+		out.writer.write(VERSION_START);
+		out.writer.write(VERSION_END);
 	}
 	
 	public void xmlVersion(EncName encoding) throws IOException {
 		
-		if (theState != State.START)
+		if (state != State.START)
 			throw new MalformedXMLException("XML Version declared at illegal location.");
-		theState = State.VERSION;
+		state = State.VERSION;
 		
-		theWriter.write(VERSION_START);
+		out.writer.write(VERSION_START);
 		if (encoding != null) {
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(VERSION_ENC);
-			theWriter.write(XMLChar.EQUALS_CHAR);
-			theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
-			theWriter.write(encoding);
-			theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(VERSION_ENC);
+			out.writer.write(XMLChar.EQUALS_CHAR);
+			out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
+			out.writer.write(encoding);
+			out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
 		}
-		theWriter.write(VERSION_END);
+		out.writer.write(VERSION_END);
 	}
 	
 	public void xmlVersion(EncName encoding, boolean standalone) throws IOException {
 		
-		if (theState != State.START)
+		if (state != State.START)
 			throw new MalformedXMLException("XML Version declared at illegal location.");
-		theState = State.VERSION;
+		state = State.VERSION;
 		
-		theWriter.write(VERSION_START);
+		out.writer.write(VERSION_START);
 		if (encoding != null) {
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(VERSION_ENC);
-			theWriter.write(XMLChar.EQUALS_CHAR);
-			theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
-			theWriter.write(encoding);
-			theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(VERSION_ENC);
+			out.writer.write(XMLChar.EQUALS_CHAR);
+			out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
+			out.writer.write(encoding);
+			out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
 		}
-		theWriter.write(XMLChar.SPACE_CHAR);
-		theWriter.write(VERSION_SA);
-		theWriter.write(XMLChar.EQUALS_CHAR);
-		theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
+		out.writer.write(XMLChar.SPACE_CHAR);
+		out.writer.write(VERSION_SA);
+		out.writer.write(XMLChar.EQUALS_CHAR);
+		out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
 		if (standalone)
-			theWriter.write(YES);
+			out.writer.write(YES);
 		else
-			theWriter.write(NO);
-		theWriter.write(XMLChar.EQUALS_CHAR);
-		theWriter.write(XMLChar.DOUBLE_QUOTE_CHAR);
-		theWriter.write(VERSION_END);
+			out.writer.write(NO);
+		out.writer.write(XMLChar.EQUALS_CHAR);
+		out.writer.write(XMLChar.DOUBLE_QUOTE_CHAR);
+		out.writer.write(VERSION_END);
 	}
 	
 	// --- Document Type Definition ---
@@ -129,34 +129,34 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 							PublicIDLiteral publicID,
 							SystemLiteral systemID) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case START:
 			case VERSION:
 				break;
 			default:
 				throw new MalformedXMLException("DTD Version declared at illegal location.");
 		}
-		theState = State.DTD;
+		state = State.DTD;
 		
-		theWriter.write(DOCTYPE_START);
-		theWriter.write(XMLChar.SPACE_CHAR);
-		theWriter.write(rootElementName);
+		out.writer.write(DOCTYPE_START);
+		out.writer.write(XMLChar.SPACE_CHAR);
+		out.writer.write(rootElementName);
 		
 		if (publicID != null && systemID != null) {
 			
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(PUBLIC);
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(publicID);
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(systemID);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(PUBLIC);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(publicID);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(systemID);
 			
 		} else if (systemID != null) {
 			
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(SYSTEM);
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(systemID);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(SYSTEM);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(systemID);
 		}
 		
 		return this;
@@ -164,7 +164,7 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	
 	// --- Namespaces ---
 	public void defaultNamespace(NamespaceURI uri) throws IOException {
-		switch(theState) {
+		switch(state) {
 		case START:
 		case VERSION:
 		case DTD:
@@ -173,11 +173,11 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 			throw new MalformedXMLException("Root Namespace modified after root element started");
 		}
 		
-		theElementWriter.defaultNamespace(uri);
+		elementWriter.defaultNamespace(uri);
 	}
 	
 	public void namespace(NamespaceURI uri) throws IOException {
-		switch(theState) {
+		switch(state) {
 		case START:
 		case VERSION:
 		case DTD:
@@ -186,7 +186,7 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 			throw new MalformedXMLException("Root Namespace modified after root element started");
 		}
 		
-		theElementWriter.namespace(uri);
+		elementWriter.namespace(uri);
 	}
 	
 	// --- Root Element ---
@@ -196,26 +196,26 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	
 	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case ROOT:
 			case END:
 				throw new MalformedXMLException("Root element declared more than once.");
 			case DTD:
 				closeDTDWriter();
 		}
-		theState = State.ROOT;
+		state = State.ROOT;
 		
-		theElementWriter.open(elementName);
+		elementWriter.open(elementName);
 		
 		if (attributes != null) {
 			Arrays.sort(attributes);
 			for (Attribute a : attributes)
-				theElementWriter.attribute(a);
+				elementWriter.attribute(a);
 		}
 		
-		theElementWriter.content();
+		elementWriter.content();
 		
-		return theElementWriter;
+		return elementWriter;
 	}
 	
 	public void emptyRootElement(Name elementName) throws IOException {
@@ -224,31 +224,31 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	
 	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case ROOT:
 			case END:
 				throw new MalformedXMLException("Root element declared more than once.");
 			case DTD:
 				closeDTDWriter();
 		}
-		theState = State.ROOT;
+		state = State.ROOT;
 	
-		theElementWriter.open(elementName);
+		elementWriter.open(elementName);
 		
 		if (attributes != null) {
 			Arrays.sort(attributes);
 			for (Attribute a : attributes)
-				theElementWriter.attribute(a);
+				elementWriter.attribute(a);
 		}
 		
-		theElementWriter.close();
+		elementWriter.close();
 	}
 	
 	// --- Misc Document Parts ---
 	
 	public void comment(Comment c) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case START:
 			case END:
 				throw new MalformedXMLException("Comment created at illegal location.");
@@ -256,17 +256,17 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 				closeDTDWriter();
 				break;
 			case ROOT:
-				theElementWriter.close();	
+				elementWriter.close();	
 		}
 		
-		theWriter.write(COMMENT_START);
-		theWriter.write(c);
-		theWriter.write(COMMENT_END);
+		out.writer.write(COMMENT_START);
+		out.writer.write(c);
+		out.writer.write(COMMENT_END);
 	}
 	
 	public void pi(Target target, Instruction instruction) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case START:
 			case END:
 				throw new MalformedXMLException("Processing Instruction created at illegal location.");
@@ -274,21 +274,21 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 				closeDTDWriter();
 				break;
 			case ROOT:
-				theElementWriter.close();	
+				elementWriter.close();	
 		}
 		
-		theWriter.write(PI_START);
-		theWriter.write(target);
+		out.writer.write(PI_START);
+		out.writer.write(target);
 		if (instruction != null) {
-			theWriter.write(XMLChar.SPACE_CHAR);
-			theWriter.write(instruction);
+			out.writer.write(XMLChar.SPACE_CHAR);
+			out.writer.write(instruction);
 		}
-		theWriter.write(PI_END);
+		out.writer.write(PI_END);
 	}
 	
 	public void space(Whitespace space) throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case START:
 			case END:
 				throw new MalformedXMLException("White space created at illegal location.");
@@ -296,16 +296,16 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 				closeDTDWriter();
 				break;
 			case ROOT:
-				theElementWriter.close();	
+				elementWriter.close();	
 		}
 		
-		theWriter.write(space);
+		out.writer.write(space);
 	}
 	
 	// --- Closing ---	
 	public void close() throws IOException {
 		
-		switch(theState) {
+		switch(state) {
 			case DTD:
 				closeDTDWriter();
 			case START:
@@ -314,11 +314,11 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 			case END:
 				return; // I guess it's okay to close a document more than once...
 			case ROOT:
-				theElementWriter.close();	
+				elementWriter.close();	
 		}
-		theState = State.END;
+		state = State.END;
 		
-		theWriter.flush();
+		out.writer.flush();
 	}
 	
 	// *** DTDWriter Methods ***
@@ -328,26 +328,26 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	
 	public XMLChunkWriter getXMLChunkWriter() {
 		
-		return theWriter;
+		return out.writer;
 	}
 	
 	public void reset() throws IOException {
 		
-		if (theState != State.END)
+		if (state != State.END)
 			close();
 		
-		theState = State.START;
+		state = State.START;
 	}
 
 	// *** Protected Methods ***
 	
 	protected void closeDTDWriter() throws IOException {
-		//if (theState == State.DTD)
-			theWriter.write(XMLChar.GREATER_THAN_CHAR);
+		//if (state == State.DTD)
+			out.writer.write(XMLChar.GREATER_THAN_CHAR);
 	}
 	
 	/* This can be overridden by subclasses to provide subclasses of ElementWriter */
-	protected BasicElementWriter createRootElementWriter(XMLChunkWriter out) {
+	protected BasicElementWriter createRootElementWriter(XMLOutputContext out) {
 		
 		return new BasicElementWriter(out);
 	}

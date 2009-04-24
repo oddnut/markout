@@ -26,7 +26,7 @@ public class HtmlDocumentWriter extends BasicDocumentWriter {
 	
 
 	// *** Constructors ***
-	public HtmlDocumentWriter(XMLChunkWriter out) {super(out);}
+	public HtmlDocumentWriter(XMLOutputContext out) {super(out);}
 
 	// *** Public Methods ***
 	
@@ -38,7 +38,7 @@ public class HtmlDocumentWriter extends BasicDocumentWriter {
 	}
 
 	// *** Protected Methods ***
-	protected BasicElementWriter createRootElementWriter(XMLChunkWriter out) {
+	protected BasicElementWriter createRootElementWriter(XMLOutputContext out) {
 		return new HtmlElementWriter(out);
 	}
 

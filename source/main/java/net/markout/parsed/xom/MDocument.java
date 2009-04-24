@@ -10,8 +10,8 @@ package net.markout.parsed.xom;
 
 import java.io.IOException;
 
+import net.markout.Content;
 import net.markout.ContentWriter;
-import net.markout.parsed.EmptyElementPolicy;
 import net.markout.types.Name;
 import net.markout.types.NamespaceURI;
 import nu.xom.Document;
@@ -25,11 +25,10 @@ import nu.xom.XPathContext;
  * 
  * Comment here.
  */
-public class MDocument extends Document implements net.markout.parsed.Document {
+public class MDocument extends Document implements Content {
 	// *** Class Members ***
 
 	// *** Instance Members ***
-	private EmptyElementPolicy emptyPolicy = null;
 
 	// *** Constructors ***
 	public MDocument(Element root) {
@@ -47,50 +46,66 @@ public class MDocument extends Document implements net.markout.parsed.Document {
 		return new MDocument(this);
 	}
 	
-	// *** net.markout.parsed.Document Methods ***
+	// *** Content Methods ***
 	
 	public void writeTo(ContentWriter out) throws IOException {
-		writeTo(out, null, (NamespaceURI[]) null);
+		
+		XOMAdapter.writeTo(out, getRootElement());
+	}
+	
+	// *** Public Methods ***
+	
+	/*  Probably don't need this, but keep it around to maybe add later?
+	public Content rootContent() {
+		
+		Element el = getRootElement();
+		if (el instanceof MElement)
+			return (MElement) el;
+		
+		return new XOMNodesContent(new Nodes(el));
+	}*/
+	
+	public Content content(String xpath, NamespaceURI... xpathNamespaceURIs) {
+		
+		Nodes nodes = query(xpath, xpathNamespaceURIs);
+		
+		if (nodes.size() == 1 && nodes.get(0) instanceof MElement)
+			return (MElement) nodes.get(0);
+		
+		return new XOMNodesContent(nodes);
+	}
+	
+	public Nodes query(String xpath, NamespaceURI... xpathNamespaceURIs) {
+		if (xpathNamespaceURIs == null || xpathNamespaceURIs.length == 0)
+			return query(xpath);
+		
+		XPathContext xpc = new XPathContext();
+		for (NamespaceURI ns : xpathNamespaceURIs) {
+			Name prefix = ns.getPreferredPrefix();
+			xpc.addNamespace(prefix != null ? prefix.toString() : "", ns.getValueString());
+		}
+		
+		return query(xpath, xpc);
 	}
 	
 	public void writeTo(ContentWriter out, String xpath) throws IOException {
 		writeTo(out, xpath, (NamespaceURI[]) null);
 	}
 	
-	public void writeTo(ContentWriter out, String xpath, NamespaceURI... namespaceURIs) throws IOException {
+	public void writeTo(ContentWriter out, String xpath, NamespaceURI... xpathNamespaceURIs) throws IOException {
 		
 		if (xpath == null) {
 			
-			XOMAdapter.writeTo(out, getRootElement(), emptyPolicy);
+			XOMAdapter.writeTo(out, getRootElement());
 			return;
 		}
 		
-		XPathContext xpc = null;
+		Nodes nodes = query(xpath, xpathNamespaceURIs);
 		
-		if (namespaceURIs != null && namespaceURIs.length > 0) {
-			xpc = new XPathContext();
-			for (NamespaceURI ns : namespaceURIs) {
-				Name prefix = ns.getPreferredPrefix();
-				xpc.addNamespace(prefix != null ? prefix.toString() : "", ns.getValueString());
-			}
-		}
-		
-		Nodes nodes = query(xpath, xpc);
-		
-		if (emptyPolicy != null)
-			XOMAdapter.writeTo(out, nodes, emptyPolicy);
-		else
-			XOMAdapter.writeTo(out, nodes);
-	}
-
-	// *** Public Methods ***
-	public void setEmptyElementPolicy(EmptyElementPolicy emptyPolicy) {
-		this.emptyPolicy = emptyPolicy;
+		XOMAdapter.writeTo(out, nodes);
 	}
 	
-	public EmptyElementPolicy getEmptyElementPolicy() {
-		return emptyPolicy;
-	}
+	
 
 	// *** Protected Methods ***
 
