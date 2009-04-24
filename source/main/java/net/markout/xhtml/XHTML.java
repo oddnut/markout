@@ -10,7 +10,7 @@ package net.markout.xhtml;
 
 import java.io.*;
 
-//import net.markout.*;
+import net.markout.*;
 import net.markout.support.*;
 import net.markout.types.*;
 
@@ -315,6 +315,12 @@ public class XHTML extends DocumentWriterFactory {
 	public static final SystemLiteral TRANSITIONAL_SYSTEM_ID = new SystemLiteral("http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd");
 	public static final PublicIDLiteral FRAMESET_PUBLIC_ID = new PublicIDLiteral("-//W3C//DTD XHTML 1.0 Frameset//EN");
 	public static final SystemLiteral FRAMESET_SYSTEM_ID = new SystemLiteral("http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd");
+	
+	public static final EmptyElementPolicy EMPTY_ELEMENT_POLICY = 
+		new NamedEmptyElementPolicy(AREA, BASE, BASEFONT, BR, COL, FRAME, HR, IMG, INPUT, ISINDEX, LINK, META, PARAM);
+	static {
+		((NamedEmptyElementPolicy) EMPTY_ELEMENT_POLICY).setRequiresSpaceBeforeClosing(true);
+	}
 
 	// *** Public Methods ***
 	
@@ -324,6 +330,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
 		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -335,6 +342,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
 		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -349,6 +357,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
 		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -360,6 +369,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
 		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -374,6 +384,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
 		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -385,6 +396,7 @@ public class XHTML extends DocumentWriterFactory {
 	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
 		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();

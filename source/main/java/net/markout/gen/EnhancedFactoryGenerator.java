@@ -133,11 +133,24 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		isParsed = true;
 	}
 	
+	public enum EmptyPolicy {	any, 
+								any_with_space, 
+								content_model, 
+								content_model_with_space, 
+								named_elements, 
+								named_elements_with_space,
+								class_name};
+	
 	public void writeTo(File sourceRootDir,
 						String packageName,
 						String factoryClassName,
 						boolean generateFactoryClass,
-						boolean generateEnhancedWriters) throws IOException, TemplateException {
+						boolean generateEnhancedWriters,
+						EmptyPolicy emptyPolicy) throws IOException, TemplateException {
+		
+		if (emptyPolicy == null)
+			emptyPolicy = EmptyPolicy.any;
+		
 		// parse only once if it's not happened yet:
 		if (!isParsed) {
 			try {
@@ -177,6 +190,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		model.put("factoryMethodPrefixes", methodPrefixes);
 		model.put("generateFactoryClass", new Boolean(generateFactoryClass));
 		model.put("generateEnhancedWriters", new Boolean(generateEnhancedWriters));
+		model.put("emptyPolicy", emptyPolicy.name());
 		model.put("generator", this);
 		
 		FileOutputStream fileOut;

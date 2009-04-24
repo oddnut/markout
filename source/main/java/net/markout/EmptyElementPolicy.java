@@ -25,6 +25,15 @@ public interface EmptyElementPolicy {
 			return false;
 		}
 	};
+	
+	public static EmptyElementPolicy DEFAULT_REQUIRES_SPACE = new EmptyElementPolicy() {
+		public boolean isRenderableAsEmptyElement(Name elementName) {
+			return true;
+		}
+		public boolean requiresSpaceBeforeClosing() {
+			return true;
+		}
+	};
 
 	// *** Interface Methods ***
 	

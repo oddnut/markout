@@ -10,7 +10,7 @@ package ${packageName};
 
 import java.io.*;
 
-<#if generateEnhancedWriters>//</#if>import net.markout.*;
+import net.markout.*;
 import net.markout.support.*;
 import net.markout.types.*;
 
@@ -41,6 +41,25 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static final PublicIDLiteral ${generator.asConstant(prefix)}_PUBLIC_ID = new PublicIDLiteral(${publicIDs[prefix_index]});
 	public static final SystemLiteral ${generator.asConstant(prefix)}_SYSTEM_ID = new SystemLiteral(${systems[prefix_index]});
 	</#list>
+	
+	public static final EmptyElementPolicy EMPTY_ELEMENT_POLICY = 
+	<#if emptyPolicy == "content_model" || emptyPolicy == "content_model_with_space">
+		<#assign isFirst = true />
+		new NamedEmptyElementPolicy(<#list elements as name><#if generator.getElementModel(name) == "empty"><#if !isFirst>, </#if><#if isFirst><#assign isFirst = false /></#if>${generator.asConstantName(name)}</#if></#list>);
+		<#if emptyPolicy == "content_model_with_space">
+	static {
+		((NamedEmptyElementPolicy) EMPTY_ELEMENT_POLICY).setRequiresSpaceBeforeClosing(true);
+	}
+		</#if>
+	<#elseif emptyPolicy == "named_elements" || emptyPolicy == "named_elements_with_space">
+		EmptyElementPolicy.DEFAULT; // NOT YET IMPLEMENTED for "named_elements*"
+	<#elseif emptyPolicy == "class_name">
+		EmptyElementPolicy.DEFAULT; // NOT YET IMPLEMENTED for "class_name"
+	<#elseif emptyPolicy == "any_with_space">
+		EmptyElementPolicy.DEFAULT_REQUIRES_SPACE;
+	<#else>
+		EmptyElementPolicy.DEFAULT;
+	</#if>
 
 	// *** Public Methods ***
 	<#if generateEnhancedWriters>
@@ -52,6 +71,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
 		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		${docWriterClassName} dw = new ${docWriterClassName}(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -65,6 +85,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
 		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		${docWriterClassName} dw = new ${docWriterClassName}(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -86,6 +107,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
 		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		DocumentWriter dw = new BasicDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();
@@ -99,6 +121,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
 		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
 		XMLOutputContext oc = new XMLOutputContext(cw);
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		DocumentWriter dw = new BasicDocumentWriter(oc);
 		if (declareVersion)
 			dw.xmlVersion();

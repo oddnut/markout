@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import freemarker.template.TemplateException;
 
+import net.markout.gen.EnhancedFactoryGenerator.EmptyPolicy;
 import net.markout.types.*;
 
 /**
@@ -41,7 +42,7 @@ public class GenerateXHTMLFactory {
 		
 		File dir = new File("./source/main/java/");
 		
-		fgen.writeTo(dir, "net.markout.xhtml", "XHTML", true, true);
+		fgen.writeTo(dir, "net.markout.xhtml", "XHTML", true, true, EmptyPolicy.content_model_with_space);
 	}
 }
 
