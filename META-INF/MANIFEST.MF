@@ -15,6 +15,7 @@ Import-Package: freemarker.core;resolution:=optional,
  org.xml.sax,
  org.xml.sax.ext
 Export-Package: net.markout,
+ net.markout.content,
  net.markout.content.xom,
  net.markout.gen,
  net.markout.support,
