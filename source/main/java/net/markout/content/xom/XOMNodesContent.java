@@ -6,12 +6,12 @@
 	All rights reserved.
 */
 
-package net.markout.parsed.xom;
+package net.markout.content.xom;
 
 import java.io.IOException;
 
-import net.markout.Content;
 import net.markout.ContentWriter;
+import net.markout.content.Content;
 import nu.xom.Nodes;
 
 /**

@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
+import net.markout.content.Content;
 import net.markout.types.*;
 
 /**

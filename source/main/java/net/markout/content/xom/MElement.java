@@ -6,13 +6,13 @@
 	All rights reserved.
 */
 
-package net.markout.parsed.xom;
+package net.markout.content.xom;
 
 import java.io.IOException;
 import java.util.*;
 
-import net.markout.Content;
 import net.markout.ContentWriter;
+import net.markout.content.Content;
 import net.markout.types.Name;
 import net.markout.types.NamespaceURI;
 import nu.xom.Element;

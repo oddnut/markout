@@ -6,9 +6,11 @@
 	All rights reserved.
 */
 
-package net.markout;
+package net.markout.content;
 
 import java.io.IOException;
+
+import net.markout.ContentWriter;
 
 /**
  * Content

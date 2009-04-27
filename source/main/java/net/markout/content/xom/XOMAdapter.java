@@ -6,7 +6,7 @@
 	All rights reserved.
 */
 
-package net.markout.parsed.xom;
+package net.markout.content.xom;
 
 import java.io.IOException;
 import java.util.Collection;

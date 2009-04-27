@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.markout.*;
+import net.markout.content.Content;
 import net.markout.types.*;
 
 // *** imports ***
