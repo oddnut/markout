@@ -70,7 +70,7 @@ public class XPathBuilder {
 	
 	public XPath xpath() {
 		
-		Namespace ns = buildNamespace();
+		Namespace ns = new Namespace();
 		
 		StringBuilder sb = new StringBuilder();
 		
@@ -91,7 +91,7 @@ public class XPathBuilder {
 		else
 			sb.append('*');
 		
-		if (atts != null) {
+		if (!atts.isEmpty()) {
 			sb.append('[');
 			
 			boolean first = true;
@@ -209,32 +209,6 @@ public class XPathBuilder {
 		// it probably won't work unless the attribute is actually 
 		// not in the same namespace as it's containing element.
 		sb.append(ns.namespaceURIPrefix(uri).toString()).append(':').append(n.toString());
-	}
-	
-	private Namespace buildNamespace() {
-		
-		Namespace ns = new Namespace();
-		
-		if (path != null) {
-			for (Name n : path) {
-				NamespaceURI uri = n.getNamespaceURI();
-				if (uri != null)
-					ns.namespaceURIPrefix(uri);
-			}
-		}
-		
-		if (name != null && name.getNamespaceURI() != null)
-			ns.namespaceURIPrefix(name.getNamespaceURI());
-		
-		if (atts != null) {
-			for (Attribute a : atts.keySet()) {
-				NamespaceURI uri = a.getName().getNamespaceURI();
-				if (uri != null)
-					ns.namespaceURIPrefix(uri);
-			}
-		}
-		
-		return ns;
 	}
 
 	// *** Private Classes ***
