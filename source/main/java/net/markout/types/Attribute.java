@@ -59,6 +59,10 @@ public class Attribute extends AttValue implements Comparable<Attribute>{
 
 	// *** Public Methods ***
 	public Name getName() {return name;}
+	
+	public String quotedValueString() {
+		return super.toString();
+	}
 
 	// *** Protected Methods ***
 

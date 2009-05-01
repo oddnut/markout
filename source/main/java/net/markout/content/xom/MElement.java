@@ -13,17 +13,21 @@ import java.util.*;
 
 import net.markout.ContentWriter;
 import net.markout.content.Content;
+import net.markout.content.SelectableContent;
+import net.markout.content.XPath;
 import net.markout.types.Name;
 import net.markout.types.NamespaceURI;
 import nu.xom.Element;
 import nu.xom.Node;
+import nu.xom.Nodes;
+import nu.xom.XPathContext;
 
 /**
  * MElement
  * 
  * Comment here.
  */
-public class MElement extends Element implements Content {
+public class MElement extends Element implements SelectableContent {
 	// *** Class Members ***
 
 	// *** Instance Members ***
@@ -103,6 +107,18 @@ public class MElement extends Element implements Content {
 	public void writeTo(ContentWriter out) throws IOException {
 		XOMAdapter.writeElementTo(out, this);
 	}
+	
+	// *** SelectableContent Methods ***
+	public Content select(XPath xpath) {
+		
+		Set<NamespaceURI> uris = xpath.getNamespaceURIs();
+		Nodes nodes = query(xpath.getExpression(), uris.toArray(new NamespaceURI[uris.size()]));
+		
+		if (nodes.size() == 1 && nodes.get(0) instanceof MElement)
+			return (MElement) nodes.get(0);
+		
+		return new XOMNodesContent(nodes);
+	}
 
 	// *** Public Methods ***
 	public Name getName() {
@@ -128,6 +144,19 @@ public class MElement extends Element implements Content {
 		}
 		
 		return new Name(uri, e.getLocalName());
+	}
+	
+	public Nodes query(String xpath, NamespaceURI... namespaceURIs) {
+		if (namespaceURIs == null || namespaceURIs.length == 0)
+			return query(xpath);
+		
+		XPathContext xpc = new XPathContext();
+		for (NamespaceURI ns : namespaceURIs) {
+			Name prefix = ns.getPreferredPrefix();
+			xpc.addNamespace(prefix != null ? prefix.toString() : "", ns.getValueString());
+		}
+		
+		return query(xpath, xpc);
 	}
 
 	// *** Protected Methods ***

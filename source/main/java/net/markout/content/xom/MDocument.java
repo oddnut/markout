@@ -9,9 +9,12 @@
 package net.markout.content.xom;
 
 import java.io.IOException;
+import java.util.Set;
 
 import net.markout.ContentWriter;
 import net.markout.content.Content;
+import net.markout.content.SelectableContent;
+import net.markout.content.XPath;
 import net.markout.types.Name;
 import net.markout.types.NamespaceURI;
 import nu.xom.Document;
@@ -25,7 +28,7 @@ import nu.xom.XPathContext;
  * 
  * Comment here.
  */
-public class MDocument extends Document implements Content {
+public class MDocument extends Document implements SelectableContent {
 	// *** Class Members ***
 
 	// *** Instance Members ***
@@ -53,6 +56,18 @@ public class MDocument extends Document implements Content {
 		XOMAdapter.writeTo(out, getRootElement());
 	}
 	
+	// *** SelectableContent Methods ***
+	public Content select(XPath xpath) {
+		
+		Set<NamespaceURI> uris = xpath.getNamespaceURIs();
+		Nodes nodes = query(xpath.getExpression(), uris.toArray(new NamespaceURI[uris.size()]));
+		
+		if (nodes.size() == 1 && nodes.get(0) instanceof MElement)
+			return (MElement) nodes.get(0);
+		
+		return new XOMNodesContent(nodes);
+	}
+	
 	// *** Public Methods ***
 	
 	/*  Probably don't need this, but keep it around to maybe add later?
@@ -65,22 +80,12 @@ public class MDocument extends Document implements Content {
 		return new XOMNodesContent(new Nodes(el));
 	}*/
 	
-	public Content content(String xpath, NamespaceURI... xpathNamespaceURIs) {
-		
-		Nodes nodes = query(xpath, xpathNamespaceURIs);
-		
-		if (nodes.size() == 1 && nodes.get(0) instanceof MElement)
-			return (MElement) nodes.get(0);
-		
-		return new XOMNodesContent(nodes);
-	}
-	
-	public Nodes query(String xpath, NamespaceURI... xpathNamespaceURIs) {
-		if (xpathNamespaceURIs == null || xpathNamespaceURIs.length == 0)
+	public Nodes query(String xpath, NamespaceURI... namespaceURIs) {
+		if (namespaceURIs == null || namespaceURIs.length == 0)
 			return query(xpath);
 		
 		XPathContext xpc = new XPathContext();
-		for (NamespaceURI ns : xpathNamespaceURIs) {
+		for (NamespaceURI ns : namespaceURIs) {
 			Name prefix = ns.getPreferredPrefix();
 			xpc.addNamespace(prefix != null ? prefix.toString() : "", ns.getValueString());
 		}
