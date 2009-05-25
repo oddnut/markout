@@ -26,7 +26,7 @@ public interface DocumentWriter {
 	// *** Public Methods ***
 	
 	// --- Whitespace Policy ---
-	// public void setWhitespacePolicy(WhitespacePolicy policy);
+	public void setWhitespacePolicy(WhitespacePolicy policy);
 	
 	// --- Empty Element Policy ---
 	public void setEmptyElementPolicy(EmptyElementPolicy emptyPolicy);
@@ -34,7 +34,7 @@ public interface DocumentWriter {
 	// --- XML Version Declaration ---
 	public void xmlVersion() throws IOException;
 	public void xmlVersion(EncName encoding) throws IOException;
-	public void xmlVersion(EncName encoding, boolean standalone) throws IOException;
+	public void xmlVersion(EncName encoding, Boolean standalone) throws IOException;
 	
 	// --- Document Type Definition ---
 	public DTDWriter dtd(	Name rootElementName,
@@ -48,8 +48,6 @@ public interface DocumentWriter {
 	// --- Root Element ---
 	public ContentWriter rootElement(Name elementName) throws IOException;
 	public ContentWriter rootElement(Name elementName, Attribute... attributes) throws IOException;
-	public void emptyRootElement(Name elementName) throws IOException;
-	public void emptyRootElement(Name elementName, Attribute... attributes) throws IOException;
 	
 	// --- Misc Document Parts ---
 	public void comment(Comment c) throws IOException;

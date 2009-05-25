@@ -23,22 +23,35 @@ import net.markout.types.Whitespace;
  */
 public interface WhitespacePolicy {
 	// *** Class Members ***
+	public static final WhitespacePolicy DEFAULT = new WhitespacePolicy() {
+		public Whitespace forPosition(DocPosition position) {
+			return Whitespace.NEW_LINE;
+		}
+		public Whitespace forPosition(Name elementName, int depth, ElementPosition position) {
+			return null;
+		}
+	};
+	
+	enum DocPosition {	after_version,
+						after_dtd,
+						after_root,
+						after_comment,
+						after_pi,
+						before_close}
+	
+	enum ElementPosition {	before_element,
+							between_attributes,
+							after_attributes,
+							after_start,
+							after_empty,
+							before_end,
+							after_end}
 
 	// *** Public Methods ***
 	
-	public Whitespace afterXMLVersion();
+	public Whitespace forPosition(DocPosition position);
 	
-	public Whitespace afterDTD();
-	
-	public Whitespace afterRoot();
-	
-	public Whitespace afterComment();
-	
-	public Whitespace afterPI();
-	
-	public Whitespace beforeClose();
-	
-	public ElementWhitespacePolicy forElement(Name elementType);
+	public Whitespace forPosition(Name elementName, int depth, ElementPosition position);
 }
 
 

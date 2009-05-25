@@ -28,7 +28,7 @@ public class XMLOutputContext {
 	public XMLOutputContext(XMLChunkWriter writer) {
 		this.writer = writer;
 		this.emptyPolicy = EmptyElementPolicy.DEFAULT;
-		this.whitespacePolicy = null;
+		this.whitespacePolicy = WhitespacePolicy.DEFAULT;
 	}
 
 	// *** Interface Methods ***

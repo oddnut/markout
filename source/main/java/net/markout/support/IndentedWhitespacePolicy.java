@@ -11,7 +11,6 @@
 // *** package ***
 package net.markout.support;
 
-import net.markout.ElementWhitespacePolicy;
 import net.markout.WhitespacePolicy;
 import net.markout.types.Name;
 import net.markout.types.Whitespace;
@@ -23,7 +22,7 @@ import net.markout.types.Whitespace;
  *
  * Comment here.  Author: David Fogel
  */
-public class IndentedWhitespacePolicy implements WhitespacePolicy, ElementWhitespacePolicy{
+public class IndentedWhitespacePolicy implements WhitespacePolicy {
 	// *** Class Members ***
 	
 	private static Whitespace[] INDENTS;
@@ -40,66 +39,20 @@ public class IndentedWhitespacePolicy implements WhitespacePolicy, ElementWhites
 
 	// *** Constructors ***
 	
-	public IndentedWhitespacePolicy() {
-	}
-
 	// *** WhitespacePolicy Methods ***
 	
-	public Whitespace afterXMLVersion() {
+	public Whitespace forPosition(DocPosition position) {
 		return Whitespace.NEW_LINE;
 	}
-	
-	public Whitespace afterDTD() {
-		return Whitespace.NEW_LINE;
-	}
-	
-	public Whitespace afterRoot() {
-		return Whitespace.NEW_LINE;
-	}
-	
-	public Whitespace afterComment() {
-		return Whitespace.NEW_LINE;
-	}
-	
-	public Whitespace afterPI() {
-		return Whitespace.NEW_LINE;
-	}
-	
-	public Whitespace beforeClose() {
-		return Whitespace.NEW_LINE;
-	}
-	
-	public ElementWhitespacePolicy forElement(Name elementType) {
-		return this;
-	}
-	
-	// *** ElementWhitespacePolicy Methods ***
-	
-	public Whitespace beforeElement(int elementDepth) {
-		return INDENTS[elementDepth < INDENTS.length ? elementDepth : INDENTS.length - 1];
-	}
-	
-	public Whitespace betweenAttributes(int elementDepth) {
-		return null;
-	}
-	
-	public Whitespace afterLastAttribute(int elementDepth) {
-		return null;
-	}
-	
-	public Whitespace afterStartTag(int elementDepth) {
-		return null;
-	}
-	
-	public Whitespace afterEmptyElement(int elementDepth) {
-		return null;
-	}
-	
-	public Whitespace beforeEndTag(int elementDepth) {
-		return INDENTS[elementDepth < INDENTS.length ? elementDepth : INDENTS.length - 1];
-	}
-	
-	public Whitespace afterEndTag(int elementDepth) {
+
+	public Whitespace forPosition(Name elementName, int depth, ElementPosition position) {
+		
+		switch (position) {
+		case before_element:
+		case before_end:
+			return INDENTS[depth < INDENTS.length ? depth : INDENTS.length - 1];
+		}
+		
 		return null;
 	}
 
