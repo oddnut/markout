@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import net.markout.*;
+import static net.markout.WhitespacePolicy.ElementPosition.*;
 import net.markout.content.Content;
 import net.markout.types.*;
 
@@ -82,7 +83,6 @@ public class BasicElementWriter implements ElementWriter {
 		
 		if (state != State.CLOSED)
 			throw new MalformedXMLException("ElementWriter already opened.");
-		state = State.OPEN;
 		
 		name = elementName;
 		
@@ -91,8 +91,28 @@ public class BasicElementWriter implements ElementWriter {
 		else
 			elementNameStack.set(elementName);
 		
+		writeStartTagOpen();
+		
+		state = State.OPEN;
+	}
+	
+	protected final void writeStartTagOpen() throws IOException {
+		
+		writeWhitespace(before_element, null);
+		
 		out.writer.write(XMLChar.LESS_THAN_CHAR);
-		writeName(name);
+		
+		NamespaceURI uri = name.getNamespaceURI();
+		if (uri == null || namespace.isDefaultNamespaceURI(uri)) {
+			
+			out.writer.write(name);
+			
+		} else {
+			
+			out.writer.write(namespace.namespaceURIPrefix(uri));
+			out.writer.write(XMLChar.COLON_CHAR);
+			out.writer.write(name);
+		}
 	}
 	
 	// --- Attributes ---
@@ -109,11 +129,30 @@ public class BasicElementWriter implements ElementWriter {
 			
 		}
 		
-		state = State.OPEN;
+		writeAttribute(att);
 		
-		out.writer.write(XMLChar.SPACE_CHAR); // need minimum whitespace between attributes
+		// this must be true: state = State.OPEN;
+	}
+	
+	protected final void writeAttribute(Attribute att) throws IOException {
+		// need minimum whitespace between attributes, so use default of one space:
+		writeWhitespace(before_attribute, Whitespace.SPACE);
 		
-		writeName(att.getName());
+		Name attName = att.getName();
+		NamespaceURI uri = attName.getNamespaceURI();
+		// Unlike with element names, the default namespace doesn't "directly" apply to attribute names (see spec)
+		// So, we only render the prefix if the attribute's namespace is different from the current elemenet name
+		// (Not really sure if this is right, but whatever...
+		if (uri == null || uri.equals(name.getNamespaceURI())) {
+			
+			out.writer.write(attName);
+			
+		} else {
+			
+			out.writer.write(namespace.namespaceURIPrefix(uri));
+			out.writer.write(XMLChar.COLON_CHAR);
+			out.writer.write(attName);
+		}
 		out.writer.write(XMLChar.EQUALS_CHAR);
 		XMLChar quoteChar = att.getQuoteChar();
 		out.writer.write(quoteChar);
@@ -153,26 +192,18 @@ public class BasicElementWriter implements ElementWriter {
 	
 	public Writer text() throws IOException {
 		
-		switch(state) {
-		case CLOSED:
-		case OPEN:
-			content();
-			break;
-			
-		case TEXT:
+		// If we're already have a text writer, no harm in just returning it:
+		if (state == State.TEXT)
 			return textWriter;
 		
-		case CHILD:
-			currentChild.close();
-			break;
-		}
-		
-		state = State.TEXT;
+		prepareForContent();
 		
 		if (textWriter == null)
 			textWriter = new TextWriter(out.writer);
 		
 		textWriter.open();
+		
+		state = State.TEXT;
 		
 		return textWriter;
 	}
@@ -249,8 +280,6 @@ public class BasicElementWriter implements ElementWriter {
 		
 		prepareForContent();
 		
-		state = State.CHILD;
-		
 		prepareChildElementWriter();
 		
 		currentChild.open(elementName, elementNameStack);
@@ -261,35 +290,9 @@ public class BasicElementWriter implements ElementWriter {
 				currentChild.attribute(a);
 		}
 		
-		// Is this okay to take out?
-		//currentChild.content();
+		state = State.CHILD;
 		
 		return currentChild;	
-	}
-	
-	public void emptyElement(Name elementName) throws IOException {
-		emptyElement(elementName, (Attribute[]) null);
-	}
-	
-	public void emptyElement(Name elementName, Attribute... attributes) throws IOException {
-		
-		prepareForContent();
-		
-		state = State.CHILD;
-		
-		prepareChildElementWriter();
-		
-		currentChild.open(elementName, elementNameStack);
-		
-		if (attributes != null) {
-			Arrays.sort(attributes);
-			for (Attribute a : attributes)
-				currentChild.attribute(a);
-		}
-		
-		currentChild.close();
-		
-		state = State.CONTENT;
 	}
 	
 	// --- Misc Content ---
@@ -319,83 +322,47 @@ public class BasicElementWriter implements ElementWriter {
 		
 		// There are two general categories for when space() is called,
 		// within the open element tag, and within content.
-		// notice the return after case OPEN.
-		
-		switch(state) {
-		case CLOSED:
-			throw new MalformedXMLException("Space written on a closed ElementWritter");
-
-		case OPEN:
+		// notice the "return" after the OPEN case:
+		if (state == State.OPEN) {
 			out.writer.write(space);
 			return;
-		
-		case TEXT:
-			textWriter.close();
-			break;
-			
-		case CHILD:
-			currentChild.close();
-			break;
 		}
 		
-		state = State.CONTENT;
+		prepareForContent();
 		
 		out.writer.write(space);
 	}
 	
 	// --- Custom Content ---
 	public void content(Content c) throws IOException {
+		
 		c.writeTo(this);
 	}
 	
 	// --- Closing ---
 	public void close() throws IOException {
 		
-		switch(state) {
-		case CLOSED:
+		if (state == State.CLOSED)
 			return;// It's okay to call close() more than once?
-			
-		case TEXT:
-			textWriter.close();
-			state = State.CONTENT;
-			break;
-			
-		case CHILD:
-			currentChild.close();
-			state = State.CONTENT;
-			break;
-		}
 		
-		switch(state) {
-		case OPEN:
+		if (state == State.OPEN && out.getEmptyElementPolicy().isRenderableAsEmptyElement(name)) {
 			
-			if (out.getEmptyElementPolicy().isRenderableAsEmptyElement(name)) {
-				
-				if (out.getEmptyElementPolicy().requiresSpaceBeforeClosing())
-					out.writer.write(Whitespace.SPACE);
-				
-				writeNamespaceDeclarations();
-				out.writer.write(TAG_CLOSE_EMPTY);
-				break;  // <- notice this break
-			}
-			//else
-			content();
-			// fall through!
+			writeEmptyClose();
 			
-		case CONTENT:
-			out.writer.write(END_TAG_OPEN);
-			writeName(name);
-			out.writer.write(XMLChar.GREATER_THAN_CHAR);
-			break;
+		} else {
+			
+			prepareForContent();
+			
+			writeClose();
 		}
 		
 		namespace.clear();
 		
-		state = State.CLOSED;
-		
 		out.writer.flush();
 		
 		name = null;
+		
+		state = State.CLOSED;
 	}
 
 	// *** Public Methods ***
@@ -406,25 +373,57 @@ public class BasicElementWriter implements ElementWriter {
 		return new BasicElementWriter(out);
 	}
 
-	// *** Package Methods ***
-	void content() throws IOException {
-		
-		switch(state) {
-		case CLOSED:
-			throw new MalformedXMLException("Content written on closed ElementWriter.");
-			
-		case CONTENT:
-		case TEXT:
-		case CHILD:
-			return; // already has content
-		}
+	protected final void writeStartTagClose() throws IOException {
+		// this will only be called in the OPEN state
 		
 		writeNamespaceDeclarations();
 		
+		writeWhitespace(before_closing_start, null);
+		
 		out.writer.write(XMLChar.GREATER_THAN_CHAR);
 		
-		state = State.CONTENT;
+		writeWhitespace(before_content, null);
 	}
+	
+	protected final void writeEmptyClose() throws IOException {
+		// this will only be called in the OPEN state
+		
+		writeNamespaceDeclarations();
+		
+		if (out.getEmptyElementPolicy().requiresSpaceBeforeClosing())
+			writeWhitespace(before_closing_empty, Whitespace.SPACE);
+		else
+			writeWhitespace(before_closing_empty, null);
+		
+		out.writer.write(TAG_CLOSE_EMPTY);
+		
+		writeWhitespace(after_empty, null);
+	}
+	
+	protected final void writeClose() throws IOException {
+		
+		writeWhitespace(before_end, null);
+		
+		out.writer.write(END_TAG_OPEN);
+		
+		NamespaceURI uri = name.getNamespaceURI();
+		if (uri == null || namespace.isDefaultNamespaceURI(uri)) {
+			
+			out.writer.write(name);
+			
+		} else {
+			
+			out.writer.write(namespace.namespaceURIPrefix(uri));
+			out.writer.write(XMLChar.COLON_CHAR);
+			out.writer.write(name);
+		}
+		
+		out.writer.write(XMLChar.GREATER_THAN_CHAR);
+		
+		writeWhitespace(after_empty, null);
+	}
+	
+	// *** Package Methods ***
 
 	// *** Private Methods ***
 	
@@ -439,8 +438,10 @@ public class BasicElementWriter implements ElementWriter {
 	private void prepareForContent() throws IOException {
 		switch(state) {
 		case CLOSED:
+			throw new MalformedXMLException("Content written on closed ElementWriter.");
+			
 		case OPEN:
-			content();
+			writeStartTagClose();
 			break;
 			
 		case TEXT:
@@ -455,20 +456,6 @@ public class BasicElementWriter implements ElementWriter {
 		state = State.CONTENT;
 	}
 	
-	private final void writeName(Name name) throws IOException {
-		NamespaceURI uri = name.getNamespaceURI();
-		if (uri == null || namespace.isDefaultNamespaceURI(uri)) {
-			
-			out.writer.write(name);
-			
-		} else {
-			
-			out.writer.write(namespace.namespaceURIPrefix(uri));
-			out.writer.write(XMLChar.COLON_CHAR);
-			out.writer.write(name);
-		}
-	}
-	
 	private final void writeNamespaceDeclarations() throws IOException {
 		
 		if (!namespace.isOpen())
@@ -476,7 +463,9 @@ public class BasicElementWriter implements ElementWriter {
 		
 		NamespaceURI defaultNS = namespace.getOwnDefaultNamespaceURI();
 		if (defaultNS != null) {
-			out.writer.write(Whitespace.SPACE);
+			
+			writeWhitespace(before_attribute, Whitespace.SPACE);
+			
 			out.writer.write(NamespaceURI.XMLNS_PREFIX);
 			out.writer.write(XMLChar.EQUALS_CHAR);
 			XMLChar q = defaultNS.getQuoteChar();
@@ -490,7 +479,9 @@ public class BasicElementWriter implements ElementWriter {
 			int len = prefixed.size();
 			for (int i = 0 ; i < len ; i++) {
 				NamespaceURI uri = prefixed.get(i);
-				out.writer.write(Whitespace.SPACE);
+				
+				writeWhitespace(before_attribute, Whitespace.SPACE);
+				
 				out.writer.write(NamespaceURI.XMLNS_PREFIX);
 				out.writer.write(XMLChar.COLON_CHAR);
 				out.writer.write(uri.getPreferredPrefix());
@@ -503,6 +494,18 @@ public class BasicElementWriter implements ElementWriter {
 		}
 			
 		namespace.close();
+	}
+	
+	private final void writeWhitespace(WhitespacePolicy.ElementPosition position, Whitespace minimumWhitespace) 
+	throws IOException {
+		Whitespace space = null;
+		WhitespacePolicy policy = out.getWhitespacePolicy();
+		if (policy != null)
+			space = policy.forPosition(name, elementNameStack.size() - 1, position);
+		if (space != null)
+			out.writer.write(space);
+		else if (minimumWhitespace != null)
+			out.writer.write(minimumWhitespace);
 	}
 
 	// *** Private Classes ***

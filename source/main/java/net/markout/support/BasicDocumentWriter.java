@@ -170,8 +170,6 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 				elementWriter.attribute(a);
 		}
 		
-		elementWriter.content(); // do we still need this?
-		
 		state = State.ROOT;
 		
 		return elementWriter;
@@ -366,12 +364,14 @@ public class BasicDocumentWriter implements DocumentWriter, DTDWriter {
 	// *** Private Methods ***
 	private final void writeWhitespace(WhitespacePolicy.DocPosition position, Whitespace defaultWhitespace) 
 	throws IOException {
-		Whitespace space = defaultWhitespace;
+		Whitespace space = null;
 		WhitespacePolicy policy = out.getWhitespacePolicy();
 		if (policy != null)
 			space = policy.forPosition(position);
 		if (space != null)
 			out.writer.write(space);
+		else if (defaultWhitespace != null)
+			out.writer.write(defaultWhitespace);
 	}
 
 	// *** Private Classes ***

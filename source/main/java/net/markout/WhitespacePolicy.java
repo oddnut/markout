@@ -40,9 +40,10 @@ public interface WhitespacePolicy {
 						before_close}
 	
 	enum ElementPosition {	before_element,
-							between_attributes,
-							after_attributes,
-							after_start,
+							before_attribute,
+							before_closing_start,
+							before_content,
+							before_closing_empty,
 							after_empty,
 							before_end,
 							after_end}

@@ -42,10 +42,10 @@ public class ${elementWriterClassName} extends BasicElementWriter implements ${c
 	
 	<#if model.name() == "empty">
 	public void ${method_name}() throws IOException {
-		emptyElement(${constant_name});
+		element(${constant_name});
 	}
 	public void ${method_name}(Attribute... attributes) throws IOException {
-		emptyElement(${constant_name}, attributes);
+		element(${constant_name}, attributes);
 	}
 	<#else>
 	public ${contentWriterClassName} ${method_name}() throws IOException {

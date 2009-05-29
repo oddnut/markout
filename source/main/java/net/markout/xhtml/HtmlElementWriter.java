@@ -65,10 +65,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void area() throws IOException {
-		emptyElement(AREA);
+		element(AREA);
 	}
 	public void area(Attribute... attributes) throws IOException {
-		emptyElement(AREA, attributes);
+		element(AREA, attributes);
 	}
 	
 	public HtmlContentWriter b() throws IOException {
@@ -79,17 +79,17 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void base() throws IOException {
-		emptyElement(BASE);
+		element(BASE);
 	}
 	public void base(Attribute... attributes) throws IOException {
-		emptyElement(BASE, attributes);
+		element(BASE, attributes);
 	}
 	
 	public void basefont() throws IOException {
-		emptyElement(BASEFONT);
+		element(BASEFONT);
 	}
 	public void basefont(Attribute... attributes) throws IOException {
-		emptyElement(BASEFONT, attributes);
+		element(BASEFONT, attributes);
 	}
 	
 	public HtmlContentWriter bdo() throws IOException {
@@ -121,10 +121,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void br() throws IOException {
-		emptyElement(BR);
+		element(BR);
 	}
 	public void br(Attribute... attributes) throws IOException {
-		emptyElement(BR, attributes);
+		element(BR, attributes);
 	}
 	
 	public HtmlContentWriter button() throws IOException {
@@ -163,10 +163,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void col() throws IOException {
-		emptyElement(COL);
+		element(COL);
 	}
 	public void col(Attribute... attributes) throws IOException {
-		emptyElement(COL, attributes);
+		element(COL, attributes);
 	}
 	
 	public HtmlContentWriter colgroup() throws IOException {
@@ -254,10 +254,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void frame() throws IOException {
-		emptyElement(FRAME);
+		element(FRAME);
 	}
 	public void frame(Attribute... attributes) throws IOException {
-		emptyElement(FRAME, attributes);
+		element(FRAME, attributes);
 	}
 	
 	public HtmlContentWriter frameset() throws IOException {
@@ -317,10 +317,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void hr() throws IOException {
-		emptyElement(HR);
+		element(HR);
 	}
 	public void hr(Attribute... attributes) throws IOException {
-		emptyElement(HR, attributes);
+		element(HR, attributes);
 	}
 	
 	public HtmlContentWriter html() throws IOException {
@@ -345,17 +345,17 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void img() throws IOException {
-		emptyElement(IMG);
+		element(IMG);
 	}
 	public void img(Attribute... attributes) throws IOException {
-		emptyElement(IMG, attributes);
+		element(IMG, attributes);
 	}
 	
 	public void input() throws IOException {
-		emptyElement(INPUT);
+		element(INPUT);
 	}
 	public void input(Attribute... attributes) throws IOException {
-		emptyElement(INPUT, attributes);
+		element(INPUT, attributes);
 	}
 	
 	public HtmlContentWriter ins() throws IOException {
@@ -366,10 +366,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void isindex() throws IOException {
-		emptyElement(ISINDEX);
+		element(ISINDEX);
 	}
 	public void isindex(Attribute... attributes) throws IOException {
-		emptyElement(ISINDEX, attributes);
+		element(ISINDEX, attributes);
 	}
 	
 	public HtmlContentWriter kbd() throws IOException {
@@ -401,10 +401,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void link() throws IOException {
-		emptyElement(LINK);
+		element(LINK);
 	}
 	public void link(Attribute... attributes) throws IOException {
-		emptyElement(LINK, attributes);
+		element(LINK, attributes);
 	}
 	
 	public HtmlContentWriter map() throws IOException {
@@ -422,10 +422,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void meta() throws IOException {
-		emptyElement(META);
+		element(META);
 	}
 	public void meta(Attribute... attributes) throws IOException {
-		emptyElement(META, attributes);
+		element(META, attributes);
 	}
 	
 	public HtmlContentWriter noframes() throws IOException {
@@ -478,10 +478,10 @@ public class HtmlElementWriter extends BasicElementWriter implements HtmlContent
 	}
 	
 	public void param() throws IOException {
-		emptyElement(PARAM);
+		element(PARAM);
 	}
 	public void param(Attribute... attributes) throws IOException {
-		emptyElement(PARAM, attributes);
+		element(PARAM, attributes);
 	}
 	
 	public HtmlContentWriter pre() throws IOException {

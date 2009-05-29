@@ -106,27 +106,17 @@ public class XOMAdapter {
 		}
 		
 		int childCount = e.getChildCount();
+			
+		ContentWriter cw = null;
 		
-		if (childCount == 0) {
+		if (atts == null)
+			cw = out.element(name);
+		else
+			cw = out.element(name, atts);
+		
+		for (int i = 0 ; i < childCount ; i++) {
 			
-			if (atts == null)
-				out.emptyElement(name);
-			else
-				out.emptyElement(name, atts);
-			
-		} else {
-			
-			ContentWriter cw = null;
-			
-			if (atts == null)
-				cw = out.element(name);
-			else
-				cw = out.element(name, atts);
-			
-			for (int i = 0 ; i < childCount ; i++) {
-				
-				writeTo(cw, e.getChild(i));
-			}
+			writeTo(cw, e.getChild(i));
 		}
 	}
 	

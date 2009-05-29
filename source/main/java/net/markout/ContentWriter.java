@@ -52,8 +52,6 @@ public interface ContentWriter {
 	// --- Element Content ---
 	public ContentWriter element(Name elementName) throws IOException;
 	public ContentWriter element(Name elementName, Attribute... attributes) throws IOException;
-	public void emptyElement(Name elementName) throws IOException;
-	public void emptyElement(Name elementName, Attribute... attributes) throws IOException;
 	
 	// --- Misc Content ---
 	public void comment(Comment c) throws IOException;
