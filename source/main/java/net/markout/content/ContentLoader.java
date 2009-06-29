@@ -27,7 +27,11 @@ public interface ContentLoader {
 
 	// *** Public Methods ***
 	
+	public SelectableContent parse(InputSource xml) throws IOException, MalformedXMLException;
+	
 	public Content parse(InputSource xml, XPath xpath) throws IOException, MalformedXMLException;
+	
+	public SelectableContent load(LoadType type, InputSource xml);
 	
 	public Content load(LoadType type, InputSource xml, XPath xpath);
 	

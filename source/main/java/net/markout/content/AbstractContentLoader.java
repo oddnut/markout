@@ -53,6 +53,10 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 	}
 
 	// *** ContentLoader Methods ***
+	public SelectableContent parse(InputSource xml) throws IOException, MalformedXMLException {
+		return parseDocument(xml);
+	}
+	
 	public Content parse(InputSource xml, XPath xpath) throws IOException, MalformedXMLException {
 		
 		SelectableContent sc = parseDocument(xml);
@@ -61,6 +65,26 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 			return sc.select(xpath);
 		else
 			return sc;
+	}
+	
+	public SelectableContent load(LoadType type, final InputSource xml) {
+	
+		switch (type) {
+		
+		case lazy:
+			return new LazyContent(xml, null);
+		
+		case async:
+			
+			return new AsyncContent(asyncContentExecutor.submit(new Callable<Content>() {
+				public Content call() throws Exception {
+					return parse(xml, null);
+				}
+			}));
+			
+		default:
+			throw new IllegalArgumentException("LoadType is null or unknown.");
+		}
 	}
 	
 	public Content load(LoadType type, 
@@ -108,8 +132,40 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 	// *** Private Methods ***
 
 	// *** Private Classes ***
+	public abstract class WrappedContent implements SelectableContent {
+		
+		public abstract Content getWrapped();
+		
+		public void writeTo(ContentWriter out) throws IOException {
+			
+			try {
+				getWrapped().writeTo(out);
+			}
+			catch (ContentParsingException cpe) {
+				
+				// try to unwrap the ContentParsingException and re-throw a proper IOException if that's the type.
+				Throwable cause = cpe.getCause();
+				if (cause instanceof IOException)
+					throw (IOException) cause;
+				else
+					throw cpe;
+			}
+		}
+		
+		public boolean isSelectableContent() {
+			return getWrapped() instanceof SelectableContent;
+		}
+		
+		public Content select(XPath xpath) {
+			Content wrapped = getWrapped();
+			if (wrapped instanceof SelectableContent)
+				return ((SelectableContent) wrapped).select(xpath);
+			else
+				throw new UnsupportedOperationException("Wrapped content is not xpath-selectable");
+		}
+	}
 	
-	protected class AsyncContent implements Content {
+	protected class AsyncContent extends WrappedContent {
 		Future<Content> futureContent;
 		volatile Content wrapped;
 		
@@ -118,7 +174,7 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 			wrapped = null;
 		}
 		
-		public void writeTo(ContentWriter out) throws IOException {
+		public Content getWrapped() {
 			
 			// double-checked locking should work okay with a volatile variable in >=jdk1.5
 			if (wrapped == null) {
@@ -129,24 +185,21 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 						}
 						catch (ExecutionException ee) {
 							Throwable cause = ee.getCause();
-							if (cause instanceof IOException)
-								throw (IOException) cause;
-							// hmm:
 							throw new ContentParsingException("Exception while parsing", cause);
 						}
 						catch (InterruptedException ie) {
 							// not sure what the best thing to do here is
-							throw new RuntimeException("Content parsing interrupted", ie);
+							throw new ContentParsingException("Content parsing interrupted", ie);
 						}
 					}
 				}
 			}
 			
-			wrapped.writeTo(out);
+			return wrapped;
 		}
 	}
 	
-	protected class LazyContent implements Content {
+	protected class LazyContent extends WrappedContent {
 		InputSource xml;
 		XPath xpath;
 		volatile Content wrapped;
@@ -157,17 +210,23 @@ public abstract class AbstractContentLoader implements ContentLoader, EntityReso
 			wrapped = null;
 		}
 
-		public void writeTo(ContentWriter out) throws IOException {
+		public Content getWrapped() {
 			
 			// double-checked locking should work okay with a volatile variable in >=jdk1.5
 			if (wrapped == null) {
 				synchronized(LazyContent.this) {
-					if (wrapped == null)
-						wrapped = parse(xml, xpath);
+					if (wrapped == null) {
+						try {
+							wrapped = parse(xml, xpath);
+						}
+						catch (IOException ioe) {
+							throw new ContentParsingException("Exception while parsing", ioe);
+						}
+					}
 				}
 			}
 			
-			wrapped.writeTo(out);
+			return wrapped;
 		}
 	}
 	
