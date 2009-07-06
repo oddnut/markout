@@ -205,10 +205,11 @@ public class XPathBuilder {
 			return;
 		}
 		
-		// give up and just print the namespace.
-		// it probably won't work unless the attribute is actually 
-		// not in the same namespace as it's containing element.
-		sb.append(ns.namespaceURIPrefix(uri).toString()).append(':').append(n.toString());
+		// give up and just omit the namespace.
+		// it probably won't work to include it unless the attribute is actually 
+		// not in the same namespace as it's containing element.  The common case
+		// would probably be a single default namespace, so just skip it:
+		sb.append(n.toString());
 	}
 
 	// *** Private Classes ***
