@@ -76,7 +76,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 		return ${factoryMethodPrefix}DocumentWriter(new OSXMLChunkWriter(out, charset));
 	}
 	
-	public static ${className} ${factoryMethodPrefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
+	public static ${className} ${factoryMethodPrefix}DocumentWriter(Writer out) throws IOException {
 		return ${factoryMethodPrefix}DocumentWriter(new WriterXMLChunkWriter(out));
 	}
 	

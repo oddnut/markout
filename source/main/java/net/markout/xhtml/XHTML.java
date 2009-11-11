@@ -332,7 +332,7 @@ public class XHTML extends DocumentWriterFactory {
 		return htmlDocumentWriter(new OSXMLChunkWriter(out, charset));
 	}
 	
-	public static HtmlDocumentWriter htmlDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
+	public static HtmlDocumentWriter htmlDocumentWriter(Writer out) throws IOException {
 		return htmlDocumentWriter(new WriterXMLChunkWriter(out));
 	}
 	
