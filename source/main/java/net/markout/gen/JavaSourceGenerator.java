@@ -112,7 +112,7 @@ public class JavaSourceGenerator {
 	}
 	
 	public static String capitalizeFirst(String name) {
-		return name.toString().substring(0,1).toUpperCase() + name.toString().substring(1);
+		return name.substring(0,1).toUpperCase() + name.substring(1);
 	}
 
 	// *** Protected Methods ***

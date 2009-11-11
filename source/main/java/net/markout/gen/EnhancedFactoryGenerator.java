@@ -11,20 +11,11 @@ package net.markout.gen;
 import java.io.*;
 import java.util.*;
 
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.ext.DeclHandler;
-
 import freemarker.template.Configuration;
 import freemarker.template.DefaultObjectWrapper;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
 
-import net.markout.*;
 import net.markout.types.*;
 
 /**
@@ -35,15 +26,30 @@ import net.markout.types.*;
 public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	// *** Class Members ***
 	public enum Model {empty, any, mixed, children}
+	
+	public enum EmptyPolicy {
+		any, 
+		any_with_space, 
+		content_model, 
+		content_model_with_space, 
+		named_elements, 
+		named_elements_with_space,
+		class_name
+	}
 
 	// *** Instance Members ***
-	private Name rootElement;
-	private List<PublicIDLiteral> publicIDs;
-	private List<SystemLiteral> systems;
-	private List<String> methodPrefixes;
-	private List<String> docs;
 	
-	private boolean isParsed = false;
+	private String packageName;
+	private String factoryClassName;
+	private String writerClassPrefix;
+	private EmptyPolicy emptyPolicy;
+	
+	private boolean generateFactoryClass;
+	private boolean generateEnhancedWriters;
+	
+	private Set<Name> roots;
+	
+	private List<DocType> docTypes;
 	
 	private Set<Name> names;
 	private Map<Name, Model> elements;
@@ -56,35 +62,38 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	private Template ewTemplate;
 
 	// *** Constructors ***
-	public EnhancedFactoryGenerator(
-			Name rootElement,
-			PublicIDLiteral publicID,
-			SystemLiteral systemID) throws IOException {
-		this(rootElement, publicID, systemID, null);
-	}
 	
 	public EnhancedFactoryGenerator(
-			Name rootElement,
-			PublicIDLiteral publicID,
-			SystemLiteral systemID,
-			String factoryMethodPrefix) throws IOException {
+			NamespaceURI defaultNamespaceURI,
+			String packageName,
+			String factoryClassName,
+			String writerClassPrefix,
+			EmptyPolicy emptyPolicy) throws IOException {
 		
-		this.rootElement = rootElement;
-		NamespaceURI defaultNS = rootElement.getNamespaceURI();
-		if (defaultNS != null)
-			namespace.setDefaultNamespaceURI(defaultNS);
+		String defaultPrefix = "CHANGE_ME";
+		if (defaultNamespaceURI != null) {
+			
+			namespace.setDefaultNamespaceURI(defaultNamespaceURI);
+			
+			if (defaultNamespaceURI.getPreferredPrefix() != null)
+				defaultPrefix = capitalizeFirst(asMethodName(defaultNamespaceURI.getPreferredPrefix()));
+		}
 		
-		publicIDs = new ArrayList<PublicIDLiteral>();
-		systems = new ArrayList<SystemLiteral>();
-		methodPrefixes = new ArrayList<String>();
+		this.packageName = packageName != null ? packageName : defaultPrefix.toLowerCase();
+		this.factoryClassName = factoryClassName != null ? factoryClassName : defaultPrefix;
+		this.writerClassPrefix = writerClassPrefix != null ? writerClassPrefix : defaultPrefix;
+		this.emptyPolicy = emptyPolicy != null ? emptyPolicy : EmptyPolicy.any;
 		
-		docs = new ArrayList<String>();
+		generateFactoryClass = true;
+		generateEnhancedWriters = true;
+		
+		roots = new TreeSet<Name>();
+		
+		docTypes = new ArrayList<DocType>();
 		
 		names = new TreeSet<Name>();
 		elements = new TreeMap<Name, Model>();
 		attributes = new TreeSet<Attribute>();
-		
-		addDTD(publicID, systemID, factoryMethodPrefix != null ? factoryMethodPrefix : rootElement.toString());
 		
 		initTemplates();
 	}
@@ -93,81 +102,45 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 
 	// *** Public Methods ***
 	
-	public void addDTD(PublicIDLiteral publicID, SystemLiteral systemID, String factoryMethodPrefix) {
-		publicIDs.add(publicID);
-		systems.add(systemID);
-		methodPrefixes.add(factoryMethodPrefix);
-		
-		// now generate a stub XML file which declares the specified DTD
-		try {
-			StringWriter sw = new StringWriter();
-			DocumentWriter doc = XML.documentWriter(sw);
-			
-			doc.xmlVersion();
-			doc.dtd(rootElement, publicID, systemID);
-			doc.rootElement(rootElement);
-			doc.close();
-			sw.close();
-			
-			docs.add(sw.toString());
-			
-		} catch (IOException ioe) {
-			// shouldn't happen, using a StringWriter
-			System.out.println("BAD!!!!");
-		}
+	public void setGenerateFactoryClass(boolean generateFactoryClass) {this.generateFactoryClass = generateFactoryClass;}
+	public void setGenerateEnhancedWriters(boolean generateEnhancedWriters) {this.generateEnhancedWriters = generateEnhancedWriters;}
+	
+	public void addElement(Name name) {
+		addElement(name, Model.any);
 	}
 	
-	public void parse() throws IOException, SAXException, ParserConfigurationException {
-		
-		if (isParsed)
-			return;
-		
-		Handler handler = new Handler();
-		
-		for (String doc : docs) {
-			XMLReader xmlr = SAXParserFactory.newInstance().newSAXParser().getXMLReader();
-			xmlr.setProperty("http://xml.org/sax/properties/declaration-handler", handler);
-			xmlr.parse(new InputSource(new StringReader(doc)));
-		}
-		
-		isParsed = true;
+	public void addElement(Name name, Model model) {
+		names.add(name);
+		elements.put(name, model);
 	}
 	
-	public enum EmptyPolicy {	any, 
-								any_with_space, 
-								content_model, 
-								content_model_with_space, 
-								named_elements, 
-								named_elements_with_space,
-								class_name};
+	public void addAttributeName(Name name) {
+		names.add(name);
+	}
 	
-	public void writeTo(File sourceRootDir,
-						String packageName,
-						String factoryClassName,
-						boolean generateFactoryClass,
-						boolean generateEnhancedWriters,
-						EmptyPolicy emptyPolicy) throws IOException, TemplateException {
+	public void addAttribute(Attribute attribute) {
+		names.add(attribute.getName());
+		attributes.add(attribute);
+	}
+	
+	public void addRoot(Name root) {
+		roots.add(root);
+	}
+	
+	public void addDocTypeInfo(String shortName, PublicIDLiteral publicID, SystemLiteral system) {
+		DocType dt = new DocType();
+		dt.shortName = shortName;
+		dt.publicID = publicID;
+		dt.system = system;
 		
-		if (emptyPolicy == null)
-			emptyPolicy = EmptyPolicy.any;
+		docTypes.add(dt);
+	}
+	
+	public void writeTo(File sourceRootDir) throws IOException, TemplateException {
 		
-		// parse only once if it's not happened yet:
-		if (!isParsed) {
-			try {
-				parse();
-			} catch (SAXException se) {
-				se.printStackTrace();
-			} catch (ParserConfigurationException pce) {
-				pce.printStackTrace();
-			}
-		}
-		
-		String name = capitalizeFirst(asMethodName(rootElement));
-		if (factoryClassName == null)
-			factoryClassName = name;
-		String docWriterClassName = name + "DocumentWriter";
-		String contentWriterClassName = name + "ContentWriter";
-		String elementWriterClassName = name + "ElementWriter";
+		String docWriterClassName = writerClassPrefix + "DocumentWriter";
+		String contentWriterClassName = writerClassPrefix + "ContentWriter";
+		String elementWriterClassName = writerClassPrefix + "ElementWriter";
 		
 		Map<String, Object> model = new HashMap<String, Object>();
 		
@@ -175,19 +148,18 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		model.put("docWriterClassName", docWriterClassName);
 		model.put("elementWriterClassName", elementWriterClassName);
 		model.put("contentWriterClassName", contentWriterClassName);
+		model.put("factoryMethodPrefix", writerClassPrefix.toLowerCase());
 		
 		model.put("packageName", packageName);
 		
-		model.put("rootElementName", rootElement);
+		model.put("roots", roots);
 		
 		model.put("namespace", namespace);
 		
 		model.put("names", names);
 		model.put("elements", elements.keySet());
 		model.put("attributes", attributes);
-		model.put("publicIDs", publicIDs);
-		model.put("systems", systems);
-		model.put("factoryMethodPrefixes", methodPrefixes);
+		model.put("docTypes", docTypes);
 		model.put("generateFactoryClass", new Boolean(generateFactoryClass));
 		model.put("generateEnhancedWriters", new Boolean(generateEnhancedWriters));
 		model.put("emptyPolicy", emptyPolicy.name());
@@ -248,81 +220,16 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	}
 
 	// *** Private Classes ***
-	private class Handler implements DeclHandler {
-
-		public void attributeDecl(	String elName, 
-									String attName, 
-									String type,
-									String mode,
-									String value) throws SAXException {
-			
-			NamespaceURI uri = namespace.getDefaultNamespaceURI();
-			int colon = attName.indexOf(':');
-			if (colon >= 0) {
-				String prefix = attName.substring(0, colon);
-				attName = attName.substring(colon + 1);
-				uri = namespace.findNamespaceURI(new Name(prefix));
-				
-				if (uri == null) {
-					System.out.println("WARNING! Skipped attribute with unknown prefix- " + prefix + ":" + attName);
-					return;
-				}
-			}
-			
-			Name name = new Name(uri, attName);
-			names.add(name);
-			
-			int i = type.indexOf('(');
-			if (i >= 0) {
-				String s = type.substring(i+1, type.indexOf(')'));
-				StringTokenizer st = new StringTokenizer(s, "|");
-				while(st.hasMoreTokens()) {
-					String val = st.nextToken();
-					attributes.add(name.att(val));
-				}
-			}
-			
-			if (value != null)
-				attributes.add(name.att(value));
-		}
-
-		public void elementDecl(String name, String model) throws SAXException {
-			
-			NamespaceURI uri = namespace.getDefaultNamespaceURI();
-			int colon = name.indexOf(':');
-			if (colon >= 0) {
-				String prefix = name.substring(0, colon);
-				name = name.substring(colon + 1);
-				uri = namespace.findNamespaceURI(new Name(prefix));
-				
-				if (uri == null) {
-					System.out.println("WARNING! Skipped element with unknown prefix- " + prefix + ":" + name);
-					return;
-				}
-			}
-			
-			Name n = new Name(uri, name);
-			names.add(n);
-			
-			Model m;
-			if (model.equals("EMPTY"))
-				m = Model.empty;
-			else if (model.equals("ANY"))
-				m = Model.any;
-			else if (model.contains("#PCDATA"))
-				m = Model.mixed;
-			else
-				m = Model.children;
-			
-			elements.put(n, m);
-		}
-
-		public void externalEntityDecl(String name, String publicId, String systemId) throws SAXException {
-			// do nothing
-		}
-
-		public void internalEntityDecl(String name, String value) throws SAXException {
-			// do nothing
-		}
+	
+	public class DocType {
+		
+		public String shortName;
+		public PublicIDLiteral publicID;
+		public SystemLiteral system;
+		
+		public String getShortName() {return shortName;}
+		public PublicIDLiteral getPublicID() {return publicID;}
+		public SystemLiteral getSystem() {return system;}
 	}
+	
 }

@@ -25,12 +25,11 @@ import static ${packageName}.${factoryClassName}.*;
  */
 public class ${docWriterClassName} extends BasicDocumentWriter {
 	// *** Class Members ***
-	<#assign method_name = generator.asMethodName(rootElementName) />
-	<#assign constant_name = generator.asConstantName(rootElementName) />
-	<#assign model = generator.getElementModel(rootElementName) />
 	
 	<#if !generateFactoryClass>
-	private static final Name ${constant_name} = new Name("${rootElementName}");
+	<#list roots as root>
+	private static final Name ${generator.asConstantName(root)} = new Name("${root}");
+	</#list>
 	</#if>
 
 	// *** Constructors ***
@@ -38,6 +37,10 @@ public class ${docWriterClassName} extends BasicDocumentWriter {
 
 	// *** Public Methods ***
 	
+	<#list roots as root>
+	<#assign method_name = generator.asMethodName(root) />
+	<#assign constant_name = generator.asConstantName(root) />
+	<#assign model = generator.getElementModel(root) />
 	<#if model.name() == "empty">
 	public void ${method_name}() throws IOException {
 		emptyRootElement(${constant_name});
@@ -53,6 +56,7 @@ public class ${docWriterClassName} extends BasicDocumentWriter {
 		return (${contentWriterClassName}) rootElement(${constant_name}, attributes);
 	}
 	</#if>
+	</#list>
 
 	// *** Protected Methods ***
 	protected BasicElementWriter createRootElementWriter(XMLOutputContext out) {

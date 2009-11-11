@@ -7,9 +7,9 @@ Bundle-Vendor: markout.net
 Bundle-RequiredExecutionEnvironment: J2SE-1.5
 Import-Package: freemarker.core;resolution:=optional,
  freemarker.template;resolution:=optional,
- javax.xml.stream;version="1.0.1",
- javax.xml.stream.events;version="1.0.1",
- javax.xml.stream.util;version="1.0.1",
+ javax.xml.stream,
+ javax.xml.stream.events,
+ javax.xml.stream.util,
  nu.xom;resolution:=optional,
  org.slf4j;version="1.5.5",
  org.xml.sax,

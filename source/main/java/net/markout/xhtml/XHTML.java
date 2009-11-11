@@ -324,85 +324,28 @@ public class XHTML extends DocumentWriterFactory {
 
 	// *** Public Methods ***
 	
-	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
-		return strictDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
+	public static HtmlDocumentWriter htmlDocumentWriter(OutputStream out) throws IOException {
+		return htmlDocumentWriter(out, "UTF-8");
 	}
-	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
-		XMLOutputContext oc = new XMLOutputContext(cw);
+	
+	public static HtmlDocumentWriter htmlDocumentWriter(OutputStream out, String charset) throws IOException {
+		return htmlDocumentWriter(new OSXMLChunkWriter(out, charset));
+	}
+	
+	public static HtmlDocumentWriter htmlDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
+		return htmlDocumentWriter(new WriterXMLChunkWriter(out));
+	}
+	
+	public static HtmlDocumentWriter htmlDocumentWriter(XMLChunkWriter out) throws IOException {
+	
+		XMLOutputContext oc = new XMLOutputContext(out);
+		
 		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
+		
 		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, STRICT_PUBLIC_ID, STRICT_SYSTEM_ID);
+		
 		dw.defaultNamespace(NAMESPACE);
-		return dw;
-	}
-	public static HtmlDocumentWriter strictDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, STRICT_PUBLIC_ID, STRICT_SYSTEM_ID);
-		dw.defaultNamespace(NAMESPACE);
-		return dw;
-	}
-	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
-		return transitionalDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
-	}
-	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, TRANSITIONAL_PUBLIC_ID, TRANSITIONAL_SYSTEM_ID);
-		dw.defaultNamespace(NAMESPACE);
-		return dw;
-	}
-	public static HtmlDocumentWriter transitionalDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, TRANSITIONAL_PUBLIC_ID, TRANSITIONAL_SYSTEM_ID);
-		dw.defaultNamespace(NAMESPACE);
-		return dw;
-	}
-	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
-		return framesetDocumentWriter(declareVersion, declareDTD, out, "UTF-8");
-	}
-	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, FRAMESET_PUBLIC_ID, FRAMESET_SYSTEM_ID);
-		dw.defaultNamespace(NAMESPACE);
-		return dw;
-	}
-	public static HtmlDocumentWriter framesetDocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		HtmlDocumentWriter dw = new HtmlDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(HTML, FRAMESET_PUBLIC_ID, FRAMESET_SYSTEM_ID);
-		dw.defaultNamespace(NAMESPACE);
+		
 		return dw;
 	}
 	

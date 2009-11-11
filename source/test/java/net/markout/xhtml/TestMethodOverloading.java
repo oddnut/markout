@@ -20,7 +20,8 @@ public class TestMethodOverloading {
 	// *** Class Members ***
 	public static void main(String[] args) throws IOException {
 		
-		HtmlDocumentWriter dw = XHTML.strictDocumentWriter(false, true, System.out);
+		HtmlDocumentWriter dw = XHTML.htmlDocumentWriter(System.out);
+		dw.dtd(HTML, STRICT_PUBLIC_ID, STRICT_SYSTEM_ID);
 		HtmlContentWriter cw = dw.html(XML_LANG.att("en"), LANG.att("en"));
 		
 		cw.head().title().text("Here comes dave");

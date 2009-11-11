@@ -69,6 +69,10 @@ public class NamespaceURI extends AttValue implements Comparable<NamespaceURI>{
 		n.prefix = new Name(prefix);
 		return n;
 	}
+	
+	public Name name(String name) {
+		return new Name(this, name);
+	}
 
 	// *** Protected Methods ***
 

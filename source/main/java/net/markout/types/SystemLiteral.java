@@ -73,6 +73,8 @@ public class SystemLiteral extends XMLString {
 
 	// *** Public Methods ***
 	
+	public String getStringNoQuotes() {return theString;}
+	
 	public boolean containsDoubleQuote() {
 		return theContainedQuote == '"';
 	}

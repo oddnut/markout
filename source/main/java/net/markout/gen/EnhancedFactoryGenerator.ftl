@@ -37,9 +37,9 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static final Attribute ${generator.asConstantName(attribute)} = ${generator.asConstantName(attribute.name)}.att("${attribute.valueString}");
 	</#list>
 	
-	<#list factoryMethodPrefixes as prefix>
-	public static final PublicIDLiteral ${generator.asConstant(prefix)}_PUBLIC_ID = new PublicIDLiteral(${publicIDs[prefix_index]});
-	public static final SystemLiteral ${generator.asConstant(prefix)}_SYSTEM_ID = new SystemLiteral(${systems[prefix_index]});
+	<#list docTypes as dt>
+	public static final PublicIDLiteral ${generator.asConstant(dt.shortName)}_PUBLIC_ID = new PublicIDLiteral(${dt.publicID});
+	public static final SystemLiteral ${generator.asConstant(dt.shortName)}_SYSTEM_ID = new SystemLiteral(${dt.system});
 	</#list>
 	
 	public static final EmptyElementPolicy EMPTY_ELEMENT_POLICY = 
@@ -63,78 +63,38 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 
 	// *** Public Methods ***
 	<#if generateEnhancedWriters>
-	
-	<#list factoryMethodPrefixes as prefix>
-	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
-		return ${prefix}DocumentWriter(declareVersion, declareDTD, out, "UTF-8");
-	}
-	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		${docWriterClassName} dw = new ${docWriterClassName}(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
-		<#if namespace.defaultNamespaceURI??>
-		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
-		</#if>
-		return dw;
-	}
-	public static ${docWriterClassName} ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		${docWriterClassName} dw = new ${docWriterClassName}(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
-		<#if namespace.defaultNamespaceURI??>
-		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
-		</#if>
-		return dw;
-	}
-	</#list>
-	
+		<#assign className = docWriterClassName />
 	<#else>
-	
-	<#list factoryMethodPrefixes as prefix>
-	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out) throws IOException {
-		return ${prefix}DocumentWriter(declareVersion, declareDTD, out, "UTF-8");
-	}
-	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, OutputStream out, String charset) throws IOException {
-		XMLChunkWriter cw = new OSXMLChunkWriter(out, charset);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		DocumentWriter dw = new BasicDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
-		<#if namespace.defaultNamespaceURI??>
-		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
-		</#if>
-		return dw;
-	}
-	public static DocumentWriter ${prefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
-		XMLChunkWriter cw = new WriterXMLChunkWriter(out);
-		XMLOutputContext oc = new XMLOutputContext(cw);
-		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
-		DocumentWriter dw = new BasicDocumentWriter(oc);
-		if (declareVersion)
-			dw.xmlVersion();
-		if (declareDTD)
-			dw.dtd(${generator.asConstantName(rootElementName)}, ${generator.asConstant(prefix)}_PUBLIC_ID, ${generator.asConstant(prefix)}_SYSTEM_ID);
-		<#if namespace.defaultNamespaceURI??>
-		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
-		</#if>
-		return dw;
-	}
-	</#list>
-	
+		<#assign className = "DocumentWriter" />
 	</#if>
+	
+	public static ${className} ${factoryMethodPrefix}DocumentWriter(OutputStream out) throws IOException {
+		return ${factoryMethodPrefix}DocumentWriter(out, "UTF-8");
+	}
+	
+	public static ${className} ${factoryMethodPrefix}DocumentWriter(OutputStream out, String charset) throws IOException {
+		return ${factoryMethodPrefix}DocumentWriter(new OSXMLChunkWriter(out, charset));
+	}
+	
+	public static ${className} ${factoryMethodPrefix}DocumentWriter(boolean declareVersion, boolean declareDTD, Writer out) throws IOException {
+		return ${factoryMethodPrefix}DocumentWriter(new WriterXMLChunkWriter(out));
+	}
+	
+	public static ${className} ${factoryMethodPrefix}DocumentWriter(XMLChunkWriter out) throws IOException {
+	
+		XMLOutputContext oc = new XMLOutputContext(out);
+		
+		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
+		
+		${className} dw = new ${className}(oc);
+		
+		<#if namespace.defaultNamespaceURI??>
+		dw.defaultNamespace(${generator.asConstantName(namespace.defaultNamespaceURI)});
+		</#if>
+		
+		return dw;
+	}
+	
 }
 
 
