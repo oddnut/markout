@@ -23,26 +23,26 @@ public class EnhancedXMLOutputContext extends XMLOutputContext {
 	// *** Class Members ***
 
 	// *** Instance Members ***
-	private List<Constructor<ProxyContentWriter>> proxyConstructors;
+	private List<Constructor<ContentWriterProxy>> proxyConstructors;
 
 	// *** Constructors ***
 	public EnhancedXMLOutputContext(XMLChunkWriter writer) {
 		super(writer);
 		
-		proxyConstructors = new ArrayList<Constructor<ProxyContentWriter>>();
+		proxyConstructors = new ArrayList<Constructor<ContentWriterProxy>>();
 	}
 
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
 	
-	public void registerEnhancedProxyType(Class<ProxyContentWriter> proxyType) {
+	public void registerEnhancedProxyType(Class<ContentWriterProxy> proxyType) {
 		try {
 			proxyConstructors.add(proxyType.getConstructor(ContentWriter.class));
 		}
 		catch(NoSuchMethodException nsme) {
 			throw new IllegalArgumentException(
-					"ProxyContentWriter subclass must have a public constructor with a single ContentWriter param", nsme);
+					"ContentWriterProxy subclass must have a public constructor with a single ContentWriter param", nsme);
 		}
 	}
 	
@@ -51,20 +51,20 @@ public class EnhancedXMLOutputContext extends XMLOutputContext {
 		
 		int s = proxyConstructors.size();
 		for (int i = 0 ; i < s ; i++) {
-			Constructor<ProxyContentWriter> cons = proxyConstructors.get(i);
+			Constructor<ContentWriterProxy> cons = proxyConstructors.get(i);
 			if (enhancedType.isAssignableFrom(cons.getDeclaringClass())) {
 				try {
-					ProxyContentWriter proxy = cons.newInstance(cw);
+					ContentWriterProxy proxy = cons.newInstance(cw);
 					return (T) proxy;
 				}
 				catch (Exception e) {
 					throw new IllegalArgumentException(
-							"Couldn't instantiate ProxyContentWriter class " + cons.getDeclaringClass(), e);
+							"Couldn't instantiate ContentWriterProxy class " + cons.getDeclaringClass(), e);
 				}
 			}
 		}
 		
-		throw new IllegalArgumentException("No ProxyContentWriter class registered which implements " + enhancedType);
+		throw new IllegalArgumentException("No ContentWriterProxy class registered which implements " + enhancedType);
 	}
 	
 	// *** Protected Methods ***

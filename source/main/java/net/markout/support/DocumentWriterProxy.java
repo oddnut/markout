@@ -1,5 +1,5 @@
 /*
-	ProxyDocumentWriter.java
+	DocumentWriterProxy.java
 
 	Author: David Fogel
 	Copyright 2009 David Fogel
@@ -27,18 +27,18 @@ import net.markout.types.Target;
 import net.markout.types.Whitespace;
 
 /**
- * ProxyDocumentWriter
+ * DocumentWriterProxy
  * 
  * Comment here.
  */
-public class ProxyDocumentWriter implements DocumentWriter {
+public class DocumentWriterProxy implements DocumentWriter {
 	// *** Class Members ***
 
 	// *** Instance Members ***
 	protected DocumentWriter target;
 
 	// *** Constructors ***
-	public ProxyDocumentWriter(DocumentWriter target) {
+	public DocumentWriterProxy(DocumentWriter target) {
 		this.target = target;
 	}
 

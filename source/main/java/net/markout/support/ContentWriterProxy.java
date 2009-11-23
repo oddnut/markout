@@ -1,5 +1,5 @@
 /*
-	ProxyContentWriter.java
+	ContentWriterProxy.java
 
 	Author: David Fogel
 	Copyright 2009 David Fogel
@@ -27,18 +27,18 @@ import net.markout.types.Text;
 import net.markout.types.Whitespace;
 
 /**
- * ProxyContentWriter
+ * ContentWriterProxy
  * 
  * Comment here.
  */
-public class ProxyContentWriter implements ContentWriter {
+public class ContentWriterProxy implements ContentWriter {
 	// *** Class Members ***
 
 	// *** Instance Members ***
 	protected ContentWriter target;
 
 	// *** Constructors ***
-	public ProxyContentWriter(ContentWriter target) {
+	public ContentWriterProxy(ContentWriter target) {
 		
 		this.target = target;
 	}

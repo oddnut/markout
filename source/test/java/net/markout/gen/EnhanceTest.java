@@ -12,7 +12,7 @@ import java.io.IOException;
 
 import net.markout.ContentWriter;
 import net.markout.support.EnhancedElementWriter;
-import net.markout.support.ProxyContentWriter;
+import net.markout.support.ContentWriterProxy;
 import net.markout.types.Name;
 
 /**
@@ -29,7 +29,7 @@ public class EnhanceTest {
 		public FooCW foo() throws IOException;
 	}
 	
-	public static class FooCWProxy extends ProxyContentWriter implements FooCW {
+	public static class FooCWProxy extends ContentWriterProxy implements FooCW {
 		
 		public FooCWProxy(ContentWriter target) {super(target);}
 		
