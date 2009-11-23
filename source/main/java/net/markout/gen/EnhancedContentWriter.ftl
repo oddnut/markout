@@ -12,6 +12,9 @@ import java.io.IOException;
 
 import net.markout.*;
 import net.markout.types.*;
+<#list generator.getExternalContentWriterClasses() as externalCW>
+import ${externalCW};
+</#list>
 
 /**
  * ${contentWriterClassName}
@@ -29,8 +32,13 @@ public interface ${contentWriterClassName} extends ContentWriter {
 	public void ${method_name}() throws IOException;
 	public void ${method_name}(Attribute... attributes) throws IOException;
 	<#else>
-	public ${contentWriterClassName} ${method_name}() throws IOException;
-	public ${contentWriterClassName} ${method_name}(Attribute... attributes) throws IOException;
+		<#if namespace.isDefaultNamespaceURI(name.namespaceURI)>
+		<#assign classname = contentWriterClassName />
+		<#else>
+		<#assign classname = generator.getExternalContentWriterClass(name.namespaceURI) />
+		</#if>
+	public ${classname} ${method_name}() throws IOException;
+	public ${classname} ${method_name}(Attribute... attributes) throws IOException;
 	</#if>
 	</#list>
 }

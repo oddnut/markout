@@ -30,7 +30,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	
 	<#list names as name>
 	<#assign uri = name.getNamespaceURI() />
-	public static final Name ${generator.asConstantName(name)} = new Name(${generator.asConstantName(uri)},"${name}");
+	public static final Name ${generator.asConstantName(name)} = ${generator.asConstantName(uri)}.name("${name}");
 	</#list>
 	
 	<#list attributes as attribute>
@@ -63,7 +63,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 
 	// *** Public Methods ***
 	<#if generateEnhancedWriters>
-		<#assign className = docWriterClassName />
+		<#assign className = docWriterImplClassName />
 	<#else>
 		<#assign className = "DocumentWriter" />
 	</#if>
@@ -82,7 +82,7 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	
 	public static ${className} ${factoryMethodPrefix}DocumentWriter(XMLChunkWriter out) throws IOException {
 	
-		XMLOutputContext oc = new XMLOutputContext(out);
+		EnhancedXMLOutputContext oc = new EnhancedXMLOutputContext(out);
 		
 		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		

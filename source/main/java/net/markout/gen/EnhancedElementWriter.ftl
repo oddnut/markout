@@ -10,9 +10,12 @@ package ${packageName};
 
 import java.io.IOException;
 
-//import net.markout.*;
+import net.markout.*;
 import net.markout.support.*;
 import net.markout.types.*;
+<#list generator.getExternalContentWriterClasses() as externalCW>
+import ${externalCW};
+</#list>
 
 <#if generateFactoryClass>
 import static ${packageName}.${factoryClassName}.*;
@@ -23,7 +26,7 @@ import static ${packageName}.${factoryClassName}.*;
  * 
  * THIS IS A GENERATED FILE, DO NOT EDIT!
  */
-public class ${elementWriterClassName} extends BasicElementWriter implements ${contentWriterClassName}{
+public class ${elementWriterClassName} extends EnhancedElementWriter implements ${contentWriterClassName}{
 	// *** Class Members ***
 	<#if !generateFactoryClass>
 	<#list elements as name>
@@ -32,7 +35,7 @@ public class ${elementWriterClassName} extends BasicElementWriter implements ${c
 	</#if>
 	
 	// *** Constructors ***
-	public ${elementWriterClassName}(XMLOutputContext out) {super(out);}
+	public ${elementWriterClassName}(EnhancedXMLOutputContext out) {super(out);}
 
 	// *** ${contentWriterClassName} Methods ***
 	<#list elements as name>
@@ -48,18 +51,30 @@ public class ${elementWriterClassName} extends BasicElementWriter implements ${c
 		element(${constant_name}, attributes);
 	}
 	<#else>
+	
+	<#if namespace.isDefaultNamespaceURI(name.namespaceURI)>
 	public ${contentWriterClassName} ${method_name}() throws IOException {
 		return (${contentWriterClassName}) element(${constant_name});
 	}
 	public ${contentWriterClassName} ${method_name}(Attribute... attributes) throws IOException {
 		return (${contentWriterClassName}) element(${constant_name}, attributes);
 	}
+	<#else>
+	<#assign className = generator.getExternalContentWriterClass(name.namespaceURI) />
+	public ${className} ${method_name}() throws IOException {
+		return ((${elementWriterClassName}) element(${constant_name})).as(${className}.class);
+	}
+	public ${className} ${method_name}(Attribute... attributes) throws IOException {
+		return ((${elementWriterClassName}) element(${constant_name}, attributes)).as(${className}.class);
+	}
+	</#if>
+	
 	</#if>
 	</#list>
 
 	// *** Protected Methods ***
 	protected BasicElementWriter createChildElementWriter(XMLOutputContext out) {
-		return new ${elementWriterClassName}(out);
+		return new ${elementWriterClassName}((EnhancedXMLOutputContext) out);
 	}
 
 	// *** Package Methods ***
