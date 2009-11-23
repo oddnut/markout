@@ -23,27 +23,33 @@ public class EnhancedXMLOutputContext extends XMLOutputContext {
 	// *** Class Members ***
 
 	// *** Instance Members ***
-	private List<Constructor<ContentWriterProxy>> proxyConstructors;
+	private List<Constructor<? extends ContentWriterProxy>> proxyConstructors;
 
 	// *** Constructors ***
 	public EnhancedXMLOutputContext(XMLChunkWriter writer) {
 		super(writer);
 		
-		proxyConstructors = new ArrayList<Constructor<ContentWriterProxy>>();
+		proxyConstructors = new ArrayList<Constructor<? extends ContentWriterProxy>>();
 	}
 
 	// *** Interface Methods ***
 
 	// *** Public Methods ***
 	
-	public void registerEnhancedProxyType(Class<ContentWriterProxy> proxyType) {
-		try {
-			proxyConstructors.add(proxyType.getConstructor(ContentWriter.class));
+	@SuppressWarnings("unchecked")
+	public void registerEnhancedProxyType(Class<? extends ContentWriterProxy> proxyType) {
+		
+		Constructor<?>[] cons = proxyType.getConstructors();
+		for (Constructor<?> con : cons) {
+			Class<?>[] paramTypes = con.getParameterTypes();
+			if (paramTypes.length == 1 && ContentWriter.class.isAssignableFrom(paramTypes[0])) {
+				proxyConstructors.add((Constructor<? extends ContentWriterProxy>) con);
+				return;
+			}
 		}
-		catch(NoSuchMethodException nsme) {
-			throw new IllegalArgumentException(
-					"ContentWriterProxy subclass must have a public constructor with a single ContentWriter param", nsme);
-		}
+		
+		throw new IllegalArgumentException(
+					"ContentWriterProxy subclass must have a public constructor with a single ContentWriter param");
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -51,7 +57,7 @@ public class EnhancedXMLOutputContext extends XMLOutputContext {
 		
 		int s = proxyConstructors.size();
 		for (int i = 0 ; i < s ; i++) {
-			Constructor<ContentWriterProxy> cons = proxyConstructors.get(i);
+			Constructor<? extends ContentWriterProxy> cons = proxyConstructors.get(i);
 			if (enhancedType.isAssignableFrom(cons.getDeclaringClass())) {
 				try {
 					ContentWriterProxy proxy = cons.newInstance(cw);

@@ -10,43 +10,22 @@ package net.markout.xhtml;
 
 import java.io.IOException;
 
-//import net.markout.*;
-import net.markout.support.*;
+import net.markout.*;
 import net.markout.types.*;
-
-import static net.markout.xhtml.XHTML.*;
 
 /**
  * HtmlDocumentWriter
  * 
  * THIS IS A GENERATED FILE, DO NOT EDIT!
  */
-public class HtmlDocumentWriter extends BasicDocumentWriter {
+public interface HtmlDocumentWriter extends DocumentWriter {
 	// *** Class Members ***
-	
-
-	// *** Constructors ***
-	public HtmlDocumentWriter(XMLOutputContext out) {super(out);}
 
 	// *** Public Methods ***
 	
-	public HtmlContentWriter html() throws IOException {
-		return (HtmlContentWriter) rootElement(HTML);
-	}
-	public HtmlContentWriter html(Attribute... attributes) throws IOException {
-		return (HtmlContentWriter) rootElement(HTML, attributes);
-	}
-
-	// *** Protected Methods ***
-	protected BasicElementWriter createRootElementWriter(XMLOutputContext out) {
-		return new HtmlElementWriter(out);
-	}
-
-	// *** Package Methods ***
-
-	// *** Private Methods ***
-
-	// *** Private Classes ***
+	public HtmlContentWriter html() throws IOException;
+	public HtmlContentWriter html(Attribute... attributes) throws IOException;
+	
 }
 
 

@@ -13,6 +13,9 @@ import java.io.*;
 import net.markout.*;
 import net.markout.support.*;
 import net.markout.types.*;
+<#list generator.getExternalProxyClasses() as externalCW>
+import ${externalCW};
+</#list>
 
 /**
  * ${factoryClassName}
@@ -83,6 +86,10 @@ public class ${factoryClassName} extends DocumentWriterFactory {
 	public static ${className} ${factoryMethodPrefix}DocumentWriter(XMLChunkWriter out) throws IOException {
 	
 		EnhancedXMLOutputContext oc = new EnhancedXMLOutputContext(out);
+		
+		<#list generator.getExternalNamespaceURIs() as uri>
+		oc.registerEnhancedProxyType(${generator.getExternalProxyClass(uri)}.class);
+		</#list>
 		
 		oc.setEmptyElementPolicy(EMPTY_ELEMENT_POLICY);
 		

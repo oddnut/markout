@@ -70,6 +70,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 	private Template docTemplate;
 	private Template docImplTemplate;
 	private Template cwTemplate;
+	private Template cwProxyTemplate;
 	private Template ewTemplate;
 
 	// *** Constructors ***
@@ -160,6 +161,8 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		ew.uri = uri;
 		ew.contentWriterClass = writerClass.getName();
 		ew.proxyClass = proxyClass.getName();
+		
+		externalWriters.add(ew);
 	}
 	
 	public void addExternalWriter(
@@ -173,6 +176,8 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		ew.uri = uri;
 		ew.contentWriterClass = writerClass;
 		ew.proxyClass = proxyClass;
+		
+		externalWriters.add(ew);
 	}
 	
 	public void writeTo(File sourceRootDir) throws IOException, TemplateException {
@@ -180,6 +185,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		String docWriterClassName = writerClassPrefix + "DocumentWriter";
 		String docWriterImplClassName = writerClassPrefix + "DocumentWriterImpl";
 		String contentWriterClassName = writerClassPrefix + "ContentWriter";
+		String contentWriterProxyClassName = writerClassPrefix + "ContentWriterProxy";
 		String elementWriterClassName = writerClassPrefix + "ElementWriter";
 		
 		Map<String, Object> model = new HashMap<String, Object>();
@@ -189,6 +195,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		model.put("docWriterImplClassName", docWriterImplClassName);
 		model.put("elementWriterClassName", elementWriterClassName);
 		model.put("contentWriterClassName", contentWriterClassName);
+		model.put("contentWriterProxyClassName", contentWriterProxyClassName);
 		model.put("factoryMethodPrefix", writerClassPrefix.toLowerCase());
 		
 		model.put("packageName", packageName);
@@ -238,6 +245,12 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 			cwTemplate.process(model, out);
 			out.close();
 			
+			String contentWriterProxyFile = contentWriterProxyClassName + ".java";
+			fileOut = new FileOutputStream(new File(dir, contentWriterProxyFile), false);
+			out = new OutputStreamWriter(fileOut, "UTF-8");
+			cwProxyTemplate.process(model, out);
+			out.close();
+			
 			String elementWriterFileName = elementWriterClassName + ".java";
 			fileOut = new FileOutputStream(new File(dir, elementWriterFileName), false);
 			out = new OutputStreamWriter(fileOut, "UTF-8");
@@ -273,7 +286,8 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 			}
 		}
 		
-		return ContentWriter.class.getSimpleName();
+		//return ContentWriter.class.getSimpleName();
+		throw new IllegalArgumentException("No External Writer registered for " + uri);
 	}
 	
 	public String[] getExternalProxyClasses() {
@@ -281,6 +295,15 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		
 		for (int i = 0 ; i < result.length ; i++)
 			result[i] = externalWriters.get(i).proxyClass;
+		
+		return result;
+	}
+	
+	public NamespaceURI[] getExternalNamespaceURIs() {
+		NamespaceURI[] result = new NamespaceURI[externalWriters.size()];
+		
+		for (int i = 0 ; i < result.length ; i++)
+			result[i] = externalWriters.get(i).uri;
 		
 		return result;
 	}
@@ -313,6 +336,7 @@ public class EnhancedFactoryGenerator extends JavaSourceGenerator {
 		docTemplate = config.getTemplate("EnhancedDocumentWriter.ftl", "UTF-8");
 		docImplTemplate = config.getTemplate("EnhancedDocumentWriterImpl.ftl", "UTF-8");
 		cwTemplate = config.getTemplate("EnhancedContentWriter.ftl", "UTF-8");
+		cwProxyTemplate = config.getTemplate("EnhancedContentWriterProxy.ftl", "UTF-8");
 		ewTemplate = config.getTemplate("EnhancedElementWriter.ftl", "UTF-8");
 	}
 
