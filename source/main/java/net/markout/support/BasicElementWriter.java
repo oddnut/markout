@@ -423,6 +423,10 @@ public class BasicElementWriter implements ElementWriter {
 		writeWhitespace(after_empty, null);
 	}
 	
+	protected XMLOutputContext getXMLOutputContext() {
+		return out;
+	}
+	
 	// *** Package Methods ***
 
 	// *** Private Methods ***
