@@ -10,7 +10,8 @@ package net.markout.xhtml;
 
 import java.io.IOException;
 
-import net.markout.*;
+//import net.markout.*;
+import net.markout.support.*;
 import net.markout.types.*;
 
 /**
@@ -18,7 +19,7 @@ import net.markout.types.*;
  * 
  * THIS IS A GENERATED FILE, DO NOT EDIT!
  */
-public interface HtmlContentWriter extends ContentWriter {
+public interface HtmlContentWriter extends EnhancedContentWriter {
 	// *** Class Members ***
 
 	// *** Public Methods ***

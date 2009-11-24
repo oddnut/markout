@@ -18,7 +18,7 @@ import net.markout.ContentWriter;
  * 
  * Comment here.
  */
-public class EnhancedElementWriter extends BasicElementWriter {
+public class EnhancedElementWriter extends BasicElementWriter implements EnhancedContentWriter {
 	// *** Class Members ***
 
 	// *** Instance Members ***

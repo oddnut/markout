@@ -10,7 +10,8 @@ package ${packageName};
 
 import java.io.IOException;
 
-import net.markout.*;
+//import net.markout.*;
+import net.markout.support.*;
 import net.markout.types.*;
 <#list generator.getExternalContentWriterClasses() as externalCW>
 import ${externalCW};
@@ -21,7 +22,7 @@ import ${externalCW};
  * 
  * THIS IS A GENERATED FILE, DO NOT EDIT!
  */
-public interface ${contentWriterClassName} extends ContentWriter {
+public interface ${contentWriterClassName} extends EnhancedContentWriter {
 	// *** Class Members ***
 
 	// *** Public Methods ***

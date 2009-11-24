@@ -15,13 +15,13 @@ import net.markout.ContentWriter;
  * 
  * Comment here.
  */
-public class EnhancedContentWriterProxy extends ContentWriterProxy {
+public class EnhancedContentWriterProxy extends ContentWriterProxy implements EnhancedContentWriter {
 	// *** Class Members ***
 
 	// *** Instance Members ***
 
 	// *** Constructors ***
-	public EnhancedContentWriterProxy(EnhancedElementWriter target) {
+	public EnhancedContentWriterProxy(EnhancedContentWriter target) {
 		super(target);
 	}
 
@@ -30,7 +30,7 @@ public class EnhancedContentWriterProxy extends ContentWriterProxy {
 	// *** Public Methods ***
 	
 	public <T extends ContentWriter> T as(Class<T> enhancedType) {
-		return ((EnhancedElementWriter) target).as(enhancedType);
+		return ((EnhancedContentWriter) target).as(enhancedType);
 	}
 
 	// *** Protected Methods ***
