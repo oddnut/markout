@@ -187,7 +187,11 @@ public class BasicElementWriter implements ElementWriter {
 	
 	public void text(String text) throws IOException {
 		
-		text().write(text);
+		Writer tw = text();
+		// this is where we allow null to be passed in without throwing an exception, 
+		// as a convenience for common chaining patterns
+		if (text != null)
+			tw.write(text);
 	}
 	
 	public Writer text() throws IOException {
