@@ -4,7 +4,7 @@ Bundle-Name: Markout
 Bundle-SymbolicName: net.markout
 Bundle-Version: 1.0.0
 Bundle-Vendor: markout.net
-Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: freemarker.core;resolution:=optional,
  freemarker.template;resolution:=optional,
  javax.xml.stream,
