@@ -7,13 +7,8 @@ Bundle-Vendor: markout.net
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: freemarker.core;resolution:=optional,
  freemarker.template;resolution:=optional,
- javax.xml.stream,
- javax.xml.stream.events,
- javax.xml.stream.util,
  nu.xom;resolution:=optional,
- org.slf4j;version="1.5.5",
- org.xml.sax,
- org.xml.sax.ext
+ org.slf4j;version="1.5.5"
 Export-Package: net.markout,
  net.markout.content,
  net.markout.content.xom,
