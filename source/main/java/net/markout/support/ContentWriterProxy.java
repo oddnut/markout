@@ -53,6 +53,7 @@ public class ContentWriterProxy implements ContentWriter {
 	final public void text(Text text) throws IOException {target.text(text);}
 	final public void text(String text) throws IOException {target.text(text);}
 	final public Writer text() throws IOException {return target.text();}
+	final public Writer cdata() throws IOException {return target.cdata();}
 	
 	// --- Character Data Content---
 	final public void characters(CharData charData) throws IOException {target.characters(charData);}

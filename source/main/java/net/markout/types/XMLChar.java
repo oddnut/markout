@@ -42,8 +42,7 @@ public class XMLChar extends XMLChunk {
 	// *** Constructors ***
 	
 	public XMLChar(char c) {
-		if ( ! isXMLChar(c))
-			throw new IllegalXMLCharacterException(c);
+		checkIsXMLChar(c);
 		theChar = c;
 	}
 	
@@ -72,6 +71,15 @@ public class XMLChar extends XMLChunk {
 	// *** Public Methods ***
 	public char getChar() {
 		return theChar;
+	}
+	
+	public static final void checkIsXMLChar(char c) {
+		if (	c >= '\u0020' || 
+				c == '\t' ||
+				c == '\n' ||
+				c == '\r')
+			return;
+		throw new IllegalXMLCharacterException(c);
 	}
 	
 	public static final boolean isXMLChar(char c) {

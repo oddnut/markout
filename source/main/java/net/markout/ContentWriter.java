@@ -36,6 +36,7 @@ public interface ContentWriter {
 	public void text(Text text) throws IOException;
 	public void text(String text) throws IOException;
 	public Writer text() throws IOException;
+	public Writer cdata() throws IOException;
 	
 	// --- Character Data Content---
 	public void characters(CharData charData) throws IOException;

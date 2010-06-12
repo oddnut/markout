@@ -16,6 +16,7 @@ import java.util.List;
 import net.markout.*;
 import static net.markout.WhitespacePolicy.ElementPosition.*;
 import net.markout.content.Content;
+import net.markout.support.TextWriter.Mode;
 import net.markout.types.*;
 
 // *** imports ***
@@ -31,6 +32,9 @@ public class BasicElementWriter implements ElementWriter {
 	
 	private static final XMLString TAG_CLOSE_EMPTY = new XMLString("/>");
 	private static final XMLString END_TAG_OPEN = new XMLString("</");
+	
+	private static final XMLString CDATA_START = new XMLString("<![CDATA[");
+	private static final XMLString CDATA_END = new XMLString("]]>");
 	
 	private enum State {CLOSED, OPEN, CONTENT, TEXT, CHILD}
 
@@ -196,8 +200,8 @@ public class BasicElementWriter implements ElementWriter {
 	
 	public Writer text() throws IOException {
 		
-		// If we're already have a text writer, no harm in just returning it:
-		if (state == State.TEXT)
+		// If we're already have a text writer and it's in the right mode, no harm in just returning it:
+		if (state == State.TEXT && textWriter.getMode() == Mode.text)
 			return textWriter;
 		
 		prepareForContent();
@@ -205,7 +209,25 @@ public class BasicElementWriter implements ElementWriter {
 		if (textWriter == null)
 			textWriter = new TextWriter(out.writer);
 		
-		textWriter.open();
+		textWriter.open(Mode.text);
+		
+		state = State.TEXT;
+		
+		return textWriter;
+	}
+	
+	public Writer cdata() throws IOException {
+		
+		// If we're already have a text writer, and it's in the right mode, no harm in just returning it:
+		if (state == State.TEXT && textWriter.getMode() == Mode.cdata)
+			return textWriter;
+		
+		prepareForContent();
+		
+		if (textWriter == null)
+			textWriter = new TextWriter(out.writer);
+		
+		textWriter.open(Mode.cdata);
 		
 		state = State.TEXT;
 		
@@ -224,7 +246,9 @@ public class BasicElementWriter implements ElementWriter {
 		
 		prepareForContent();
 		
+		out.writer.write(CDATA_START);
 		out.writer.write(cdata);
+		out.writer.write(CDATA_END);
 	}
 	
 	// --- Reference Content ---

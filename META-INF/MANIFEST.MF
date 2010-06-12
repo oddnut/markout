@@ -10,7 +10,10 @@ Import-Package: freemarker.core;resolution:=optional,
  javax.xml.parsers,
  javax.xml.stream,
  nu.xom;resolution:=optional,
- org.slf4j;version="1.5.5"
+ org.slf4j;version="1.5.5",
+ org.xml.sax,
+ org.xml.sax.ext,
+ org.xml.sax.helpers
 Export-Package: net.markout,
  net.markout.content,
  net.markout.content.xom,
