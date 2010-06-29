@@ -9,6 +9,8 @@
 package net.markout.content;
 
 import java.io.*;
+import java.net.URL;
+import java.net.URLConnection;
 
 import org.xml.sax.InputSource;
 
@@ -136,6 +138,17 @@ public class Sources {
 			return null;
 			// ??
 		}
+	}
+	
+	public static InputSource from(URL url) {
+		
+		try {
+			URLConnection con = url.openConnection();
+			con.connect();
+			return new InputSource(con.getInputStream());
+		}
+		catch (IOException ioe) {}
+		return null; // hmm, not sure if this is a good idea?
 	}
 
 	// *** Protected Methods ***
