@@ -27,7 +27,7 @@ import net.markout.types.*;
  * Comment here.
  */
 public class GenerateXHTMLFactory {
-	static NamespaceURI XHTML_NS = new NamespaceURI("http://www.w3.org/1999/xhtml");
+	static NamespaceURI XHTML_NS = new NamespaceURI("http://www.w3.org/1999/xhtml", "xhtml");
 	static Name HTML_ROOT = XHTML_NS.name("html");
 	
 	static PublicIDLiteral STRICT_PUBLIC_ID = new PublicIDLiteral("-//W3C//DTD XHTML 1.0 Strict//EN");
