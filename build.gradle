@@ -1,0 +1,27 @@
+apply from: "../oddnut/repositories.gradle"
+apply from: "../oddnut/osgi.gradle"
+
+version = "1.0.0"
+
+dependencies {
+	compile ":org.freemarker:2.3.15",
+			":xom:1.2.2b3",
+			":slf4j-api:1.5.11"
+}
+
+jar {
+	manifest {
+		setName			"Markout"
+		symbolicName =	"net.markout"
+		vendor =		"markout.net"
+		description =	"Streaming heirarchical API for writing XML"
+		version =		project.version
+		
+		instruction "Private-Package", "net.markout.oldgen"
+		instruction "Export-Package", "net.markout.*;version=$version"
+		instruction "Import-Package", 
+					"freemarker.*;resolution:=optional", 
+					"nu.xom.*;resolution:=optional",
+					"*"
+	}
+}
